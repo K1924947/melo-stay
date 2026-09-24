@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>melo stay — Seoul</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@200;300;400;500&family=Newsreader:opsz,wght@6..72,300;6..72,400&family=Inter:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --stone-light:#F6F3EE;
+    --stone-deep:#DDD6CB;
+    --ink:#2B2A26;
+    --ink-soft:#6B6960;
+    --oak:#B08D64;
+    --oak-soft:#E4D5C2;
+    --blue-grey:#7C8B93;
+    --sage:#93A484;
+    --sage-soft:#E7ECE3;
+    --max:1120px;
+    --ease:cubic-bezier(0.22,1,0.36,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Inter','Noto Sans SC','Noto Sans KR',sans-serif;
+    background:var(--stone-light);
+    color:var(--ink);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.wordmark{
+    font-family:'Jost','Noto Sans SC','Noto Sans KR',sans-serif;
+    font-weight:300;
+    letter-spacing:0.02em;
+  }
+  a{color:inherit;text-decoration:none;}
+  img{max-width:100%;display:block;}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 32px;}
+  @media (max-width:640px){.wrap{padding:0 20px;}}
+
+  /* ---------- Header / Nav ---------- */
+  header{
+    position:sticky;top:0;z-index:100;
+    background:rgba(246,243,238,0.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid transparent;
+    transition:box-shadow .3s var(--ease), border-color .3s var(--ease);
+  }
+  header.scrolled{
+    border-bottom-color:var(--stone-deep);
+    box-shadow:0 2px 24px rgba(43,42,38,0.06);
+  }
+  .nav-inner{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:20px 32px;max-width:var(--max);margin:0 auto;
+    height:80px;box-sizing:border-box;
+  }
+  @media (max-width:640px){.nav-inner{padding:16px 20px;height:64px;}}
+  .wordmark{
+    font-size:22px;font-weight:300;letter-spacing:0.08em;
+    color:var(--blue-grey);
+  }
+  .wordmark span{display:block;font-size:10px;letter-spacing:0.35em;color:var(--ink-soft);margin-top:2px;}
+  nav ul{display:flex;gap:36px;list-style:none;}
+  nav a{
+    font-size:14px;letter-spacing:0.03em;color:var(--ink);
+    padding-bottom:4px;border-bottom:1px solid transparent;
+    transition:border-color .2s;
+    cursor:pointer;
+  }
+  nav a:hover, nav a.active{border-color:var(--oak);}
+  .nav-right{display:flex;align-items:center;gap:16px;}
+  .nav-cta{
+    font-size:13px;padding:9px 20px;border:1px solid var(--ink);border-radius:2px;
+    letter-spacing:0.02em;cursor:pointer;background:none;
+  }
+  .nav-cta:hover{background:var(--ink);color:var(--stone-light);}
+  .mobile-toggle{display:none;background:none;border:none;font-size:22px;cursor:pointer;color:var(--ink);}
+  @media (max-width:820px){
+    nav ul{display:none;}
+    .mobile-toggle{display:block;}
+  }
+  .mobile-menu{
+    display:none;flex-direction:column;gap:0;
+    border-top:1px solid var(--stone-deep);
+  }
+  .mobile-menu.open{display:flex;}
+  .mobile-menu a{
+    padding:16px 20px;border-bottom:1px solid var(--stone-deep);font-size:15px;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    position:relative;height:calc(100vh - 80px);min-height:480px;
+    display:flex;align-items:flex-end;
+    background:linear-gradient(180deg, var(--oak-soft) 0%, var(--stone-deep) 100%);
+    overflow:hidden;
+  }
+  @media (max-width:640px){.hero{height:calc(100vh - 64px);}}
+  .hero-placeholder{
+    position:absolute;inset:0;
+    display:flex;align-items:center;justify-content:center;
+    flex-direction:column;gap:8px;
+    color:var(--ink-soft);
+  }
+  .hero-photo{
+    position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 44%;
+  }
+  .hero-scrim{
+    position:absolute;inset:0;z-index:1;
+    background:linear-gradient(90deg, rgba(246,243,238,0.97) 0%, rgba(246,243,238,0.88) 16%, rgba(246,243,238,0.46) 30%, rgba(246,243,238,0.1) 42%, rgba(246,243,238,0) 52%);
+  }
+  @media (max-width:820px){
+    .hero-scrim{
+      background:linear-gradient(180deg, rgba(246,243,238,0.35) 0%, rgba(246,243,238,0.6) 38%, rgba(246,243,238,0.96) 62%, rgba(246,243,238,0.98) 100%);
+    }
+  }
+  .ph-label{
+    font-size:11px;letter-spacing:0.15em;text-transform:uppercase;
+    border:1px dashed var(--ink-soft);padding:6px 14px;border-radius:2px;
+  }
+  .hero-content{
+    position:relative;z-index:2;
+    padding:0 clamp(32px,6vw,88px) 64px;
+    width:100%;
+    color:var(--ink);
+    animation:heroIn 1.1s var(--ease) both;
+  }
+  @keyframes heroIn{
+    from{opacity:0;transform:translateY(26px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+  .hero-headline{
+    font-family:'Newsreader','Noto Serif SC','Noto Serif KR',serif;
+    font-weight:300;text-transform:lowercase;
+    font-size:clamp(42px,6.6vw,76px);line-height:1.1;letter-spacing:0;
+    color:var(--ink);max-width:480px;
+  }
+  .tagline-sub{
+    margin-top:18px;font-size:16px;font-weight:400;color:var(--ink-soft);max-width:380px;
+  }
+  .hero-cta-row{display:flex;flex-wrap:wrap;gap:14px;margin-top:32px;}
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;
+    font-size:14px;padding:15px 26px;border-radius:2px;cursor:pointer;
+    letter-spacing:0.01em;border:1px solid var(--ink);transition:background .2s,color .2s;
+  }
+  .btn .arrow{font-size:15px;transition:transform .2s var(--ease);}
+  .btn:hover .arrow{transform:translateX(3px);}
+  .btn-primary{background:var(--ink);color:var(--stone-light);}
+  .btn-primary:hover{background:#1c1b18;}
+  .btn-outline{background:transparent;color:var(--ink);}
+  .btn-outline:hover{background:rgba(43,42,38,0.06);}
+  .hero-bottom-row{
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;
+    margin-top:48px;max-width:640px;
+  }
+  .hero-caption-line{
+    font-size:13px;letter-spacing:0.04em;color:var(--ink-soft);
+  }
+  @media (max-width:640px){
+    .hero-headline{max-width:100%;}
+    .hero-bottom-row{margin-top:36px;}
+  }
+  .hero-scroll-cue{
+    position:absolute;left:50%;bottom:22px;transform:translateX(-50%);
+    z-index:3;display:flex;align-items:center;justify-content:center;
+    width:40px;height:40px;border-radius:50%;
+    border:1px solid rgba(43,42,38,0.22);background:rgba(246,243,238,0.4);
+    color:var(--ink-soft);cursor:pointer;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);
+    transition:border-color .25s,background .25s,color .25s;
+    animation:heroCueFade 1.4s var(--ease) both;
+  }
+  .hero-scroll-cue:hover{border-color:var(--ink);color:var(--ink);background:rgba(246,243,238,0.7);}
+  .hero-scroll-cue .chevron{display:flex;animation:heroCueBounce 2.4s ease-in-out infinite;}
+  @keyframes heroCueBounce{0%,100%{transform:translateY(0);}50%{transform:translateY(4px);}}
+  @keyframes heroCueFade{from{opacity:0;transform:translateX(-50%) translateY(8px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
+  @media (max-width:640px){.hero-scroll-cue{width:36px;height:36px;bottom:14px;}}
+
+  /* ---------- Section basics ---------- */
+  section{padding:96px 0;}
+  @media (max-width:640px){section{padding:64px 0;}}
+  .section-head{max-width:560px;margin-bottom:48px;}
+  .section-head h2{font-size:clamp(26px,3.4vw,36px);font-weight:300;margin-bottom:14px;}
+  .section-head p{color:var(--ink-soft);font-size:15px;}
+
+  /* ---------- About teaser (2-col) ---------- */
+  .about-teaser{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;}
+  @media (max-width:820px){.about-teaser{grid-template-columns:1fr;gap:36px;}}
+  .about-teaser .img-box{aspect-ratio:4/3;}
+  .about-teaser h2{font-size:clamp(26px,3.4vw,34px);font-weight:300;margin-bottom:18px;}
+  .about-teaser p{color:var(--ink-soft);margin-bottom:14px;font-size:15px;max-width:440px;}
+  .text-link{
+    display:inline-flex;align-items:center;gap:8px;margin-top:8px;font-size:14px;
+    border-bottom:1px solid var(--ink);padding-bottom:2px;cursor:pointer;
+  }
+
+  /* ---------- Placeholder image box ---------- */
+  .img-box{
+    position:relative;
+    background:repeating-linear-gradient(135deg, var(--stone-deep), var(--stone-deep) 10px, #EFEAE1 10px, #EFEAE1 20px);
+    border:1px solid var(--stone-deep);border-radius:14px;
+    display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;
+    color:var(--ink-soft);text-align:center;padding:20px;
+  }
+  .img-box .ph-name{font-family:'Jost','Noto Sans SC','Noto Sans KR',sans-serif;font-size:15px;font-weight:400;color:var(--ink);letter-spacing:0.02em;}
+  .img-box .ph-sub{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-soft);}
+  .img-box.has-photo{background:var(--stone-deep);padding:0;overflow:hidden;box-shadow:0 1px 3px rgba(30,26,20,0.06);}
+  .img-box.has-photo img{width:100%;height:100%;object-fit:contain;display:block;}
+  .img-box.has-photo.cover img{object-fit:cover;}
+
+  /* ---------- Zoomable photos + lightbox ---------- */
+  .zoomable{cursor:zoom-in;}
+  .zoomable .zoom-icon{
+    position:absolute;bottom:14px;right:14px;width:36px;height:36px;border-radius:50%;
+    background:rgba(255,255,255,0.94);color:var(--ink);display:flex;align-items:center;justify-content:center;
+    opacity:0;transform:translateY(6px);transition:opacity .25s var(--ease), transform .25s var(--ease);
+    pointer-events:none;box-shadow:0 4px 14px rgba(30,26,20,0.18);
+  }
+  .zoomable:hover .zoom-icon{opacity:1;transform:translateY(0);}
+  .zoomable:hover img{transform:scale(1.035);}
+  .zoomable img{transition:transform .5s var(--ease);}
+  .zoomable:hover{box-shadow:0 22px 44px rgba(30,26,20,0.16);}
+  .lightbox-overlay{
+    position:fixed;inset:0;background:rgba(20,17,13,0.94);z-index:999;
+    display:none;align-items:center;justify-content:center;padding:40px;cursor:zoom-out;
+  }
+  .lightbox-overlay.open{display:flex;}
+  .lightbox-img{
+    max-width:92vw;max-height:88vh;object-fit:contain;border-radius:4px;
+    box-shadow:0 30px 90px rgba(0,0,0,0.5);animation:lightboxIn .35s var(--ease) both;
+  }
+  .lightbox-close{
+    position:absolute;top:22px;right:26px;width:44px;height:44px;border-radius:50%;
+    background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.3);color:#fff;
+    font-size:26px;line-height:1;cursor:pointer;transition:background .2s var(--ease);
+  }
+  .lightbox-close:hover{background:rgba(255,255,255,0.22);}
+  @keyframes lightboxIn{from{opacity:0;transform:scale(0.96);}to{opacity:1;transform:scale(1);}}
+  .lightbox-nav-btn{
+    position:absolute;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:50%;
+    background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.3);color:#fff;
+    font-size:24px;line-height:1;cursor:pointer;transition:background .2s var(--ease);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .lightbox-nav-btn:hover{background:rgba(255,255,255,0.22);}
+  .lightbox-nav-btn.prev{left:20px;}
+  .lightbox-nav-btn.next{right:20px;}
+  .lightbox-counter{
+    position:absolute;bottom:22px;left:50%;transform:translateX(-50%);color:#fff;font-size:13px;
+    letter-spacing:0.04em;background:rgba(255,255,255,0.12);padding:6px 14px;border-radius:20px;
+  }
+  @media (max-width:640px){
+    .lightbox-overlay{padding:16px;}.lightbox-close{top:14px;right:14px;width:38px;height:38px;font-size:22px;}
+    .lightbox-nav-btn{width:38px;height:38px;font-size:20px;}
+    .lightbox-nav-btn.prev{left:8px;}.lightbox-nav-btn.next{right:8px;}
+  }
+
+  /* ---------- Amenities ---------- */
+  .amenities{background:var(--sage-soft);}
+  .amenities-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:32px;
+  }
+  .amenity{padding:4px 0;}
+  .amenity .a-line{width:28px;height:2px;background:var(--sage);margin-bottom:16px;}
+  .amenity h3{font-size:17px;font-weight:400;margin-bottom:8px;}
+  .amenity p{font-size:14px;color:var(--ink-soft);}
+
+  /* ---------- Location ---------- */
+  .location-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;}
+  @media (max-width:820px){.location-grid{grid-template-columns:1fr;gap:32px;}}
+  .loc-list{list-style:none;margin-top:24px;}
+  .loc-list li{
+    display:flex;justify-content:space-between;padding:12px 0;
+    border-bottom:1px solid var(--stone-deep);font-size:14px;
+  }
+  .loc-list li span:first-child{color:var(--ink-soft);}
+  .map-box{aspect-ratio:4/3;}
+  .travel-guide-frame{position:relative;border:1px solid var(--oak-soft);border-radius:6px;overflow:hidden;background:#fff;max-width:880px;margin:0 auto;box-shadow:0 1px 3px rgba(30,26,20,0.06);}
+  .travel-guide-frame img{display:block;width:100%;height:auto;}
+
+  /* ---------- Room cards ---------- */
+  .room-group{margin-bottom:64px;}
+  .room-group:last-child{margin-bottom:0;}
+  .room-group-head{
+    display:flex;align-items:baseline;gap:14px;margin-bottom:28px;
+    border-bottom:1px solid var(--stone-deep);padding-bottom:14px;
+  }
+  .room-group-head h3{font-size:20px;font-weight:400;}
+  .room-group-head span{font-size:12px;color:var(--ink-soft);letter-spacing:0.05em;}
+  .room-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:28px;}
+  .room-card .img-box{aspect-ratio:3/2;margin-bottom:16px;}
+  .room-card h4{font-size:16px;font-weight:500;margin-bottom:6px;}
+  .room-card .tier{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--oak);margin-bottom:6px;display:block;}
+  .room-card p{font-size:13px;color:var(--ink-soft);margin-bottom:10px;}
+  .room-card .facts{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--ink-soft);}
+  .room-card .facts span::before{content:"·";margin-right:6px;color:var(--oak);}
+  .room-card .facts span:first-child::before{content:"";margin:0;}
+  .room-card .price{margin-top:12px;font-size:13px;color:var(--ink-soft);font-style:italic;}
+  .room-card{cursor:pointer;transition:transform .15s;}
+  .room-card:hover{transform:translateY(-3px);}
+  .room-card:hover .img-box{border-color:rgba(176,141,100,0.5);box-shadow:0 16px 36px rgba(176,141,100,0.16);}
+  .room-card .view-more{
+    margin-top:14px;font-size:12px;letter-spacing:0.04em;color:var(--ink);
+    border-bottom:1px solid var(--ink);display:inline-block;padding-bottom:2px;
+  }
+
+  /* ---------- Room detail modal ---------- */
+  .room-modal-overlay{
+    display:none;position:fixed;inset:0;z-index:200;
+    background:rgba(43,42,38,0.55);
+    padding:32px 16px;overflow-y:auto;
+  }
+  .room-modal-overlay.open{display:block;}
+  .room-modal{
+    background:var(--stone-light);max-width:880px;margin:0 auto;border-radius:4px;
+    padding:40px;position:relative;
+  }
+  @media (max-width:640px){.room-modal{padding:28px 20px;}}
+  .room-modal-close{
+    position:absolute;top:18px;right:18px;background:none;border:none;
+    font-size:26px;line-height:1;cursor:pointer;color:var(--ink-soft);
+  }
+  .room-modal-close:hover{color:var(--ink);}
+  .room-modal .tier{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--oak);display:block;margin-bottom:8px;}
+  .room-modal h2{font-size:clamp(24px,3vw,30px);font-weight:300;margin-bottom:6px;}
+  .room-modal .rm-sub{font-size:14px;color:var(--ink-soft);margin-bottom:28px;}
+  .room-modal-gallery{margin-bottom:32px;}
+  .gallery-main{position:relative;height:auto;aspect-ratio:3/2;}
+  .gallery-main .img-box{height:100%;width:100%;margin-bottom:0;}
+  @media (max-width:640px){.gallery-main{aspect-ratio:4/3;}}
+  .gallery-nav-btn{
+    position:absolute;top:50%;transform:translateY(-50%);
+    width:36px;height:36px;border-radius:50%;border:none;cursor:pointer;
+    background:rgba(246,243,238,0.92);color:var(--ink);
+    display:flex;align-items:center;justify-content:center;font-size:18px;line-height:1;
+    box-shadow:0 2px 10px rgba(43,42,38,0.15);
+    transition:background .2s;
+  }
+  .gallery-nav-btn:hover{background:var(--stone-light);}
+  .gallery-nav-btn.prev{left:12px;}
+  .gallery-nav-btn.next{right:12px;}
+  .gallery-counter{
+    position:absolute;bottom:12px;right:12px;
+    background:rgba(43,42,38,0.65);color:var(--stone-light);
+    font-size:11px;letter-spacing:0.03em;padding:4px 10px;border-radius:20px;
+  }
+  .gallery-thumbs{
+    display:flex;gap:8px;margin-top:10px;overflow-x:auto;padding-bottom:2px;
+    scrollbar-width:thin;
+  }
+  .gallery-thumbs .img-box{
+    width:78px;height:56px;flex:0 0 auto;margin-bottom:0;padding:6px;cursor:pointer;
+    transition:border-color .2s, opacity .2s;opacity:0.6;
+  }
+  .gallery-thumbs .img-box .ph-name{font-size:10px;}
+  .gallery-thumbs .img-box .ph-sub{display:none;}
+  .gallery-thumbs .img-box:hover{opacity:0.85;}
+  .gallery-thumbs .img-box.active{border-color:var(--oak);border-width:2px;opacity:1;}
+  .room-modal-body{display:grid;grid-template-columns:1.4fr 1fr;gap:40px;}
+  @media (max-width:640px){.room-modal-body{grid-template-columns:1fr;gap:24px;}}
+  .room-modal-body p{font-size:14px;color:var(--ink-soft);margin-bottom:14px;line-height:1.7;}
+  .room-modal-facts{list-style:none;}
+  .room-modal-facts h4{font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:12px;}
+  .room-modal-facts li{
+    display:flex;justify-content:space-between;padding:9px 0;
+    border-bottom:1px solid var(--stone-deep);font-size:13px;
+  }
+  .room-modal-facts li span:first-child{color:var(--ink-soft);}
+  .room-modal-price{margin-top:20px;font-size:13px;color:var(--ink-soft);font-style:italic;}
+  .room-modal-cta{
+    margin-top:18px;display:inline-block;background:var(--ink);color:var(--stone-light);
+    padding:12px 26px;border-radius:2px;font-size:13px;letter-spacing:0.03em;cursor:pointer;
+  }
+
+  /* ---------- Book direct band ---------- */
+  .book-band{
+    background:var(--ink);color:var(--stone-light);text-align:center;
+  }
+  .book-band h2{color:var(--stone-light);font-weight:300;font-size:clamp(24px,3vw,32px);margin-bottom:16px;}
+  .book-band p{color:#C9C7C0;max-width:480px;margin:0 auto 28px;font-size:15px;}
+  .book-cta{
+    display:inline-block;background:var(--stone-light);color:var(--ink);
+    padding:14px 34px;border-radius:2px;font-size:14px;letter-spacing:0.03em;cursor:pointer;
+  }
+  .ota-note{margin-top:26px;font-size:12px;color:#93918A;}
+  .ota-links{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:12px 0;}
+  .ota-link{
+    display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:999px;
+    border:1px solid rgba(255,255,255,0.16);color:#C9C7C0;font-size:12.5px;letter-spacing:0.02em;
+    transition:border-color .3s var(--ease), color .3s var(--ease), background .3s var(--ease);
+  }
+  .ota-link:hover{border-color:var(--oak);color:var(--stone-light);background:rgba(176,141,100,0.1);}
+  .ota-icon{width:14px;height:14px;flex-shrink:0;}
+  .ota-phone{display:block;margin-top:4px;}
+
+  /* ---------- Enquiry form ---------- */
+  .enquiry-form{max-width:560px;margin:40px auto 0;display:flex;flex-direction:column;gap:18px;}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  @media (max-width:560px){.form-row{grid-template-columns:1fr;}}
+  .enquiry-form label{display:flex;flex-direction:column;gap:7px;font-size:12px;letter-spacing:0.04em;text-transform:uppercase;color:var(--ink-soft);}
+  .enquiry-form input, .enquiry-form textarea{
+    font-family:'Jost','Noto Sans SC','Noto Sans KR',sans-serif;font-size:15px;color:var(--ink);
+    background:#fff;border:1px solid var(--stone-deep);border-radius:4px;padding:12px 14px;resize:vertical;
+    transition:border-color .2s var(--ease);
+  }
+  .enquiry-form input:focus, .enquiry-form textarea:focus{outline:none;border-color:var(--oak);}
+  .enquiry-form button{align-self:center;margin-top:4px;}
+  .enquiry-status{font-size:14px;text-align:center;min-height:20px;margin:0;}
+  .enquiry-status.success{color:#4b7a4f;}
+  .enquiry-status.error{color:#b3413a;}
+
+  /* ---------- About page ---------- */
+  .about-hero{padding-top:64px;padding-bottom:0;}
+  .about-hero .img-box{aspect-ratio:21/9;margin-top:32px;}
+  .about-hero-photo{
+    width:100%;aspect-ratio:21/9;object-fit:cover;object-position:center 45%;
+    margin-top:32px;border-radius:2px;display:block;
+  }
+  @media (max-width:640px){.about-hero-photo{aspect-ratio:4/3;}}
+  .about-story{display:grid;grid-template-columns:1fr 1fr;gap:64px;}
+  @media (max-width:820px){.about-story{grid-template-columns:1fr;gap:32px;}}
+  .about-story p{color:var(--ink-soft);margin-bottom:16px;font-size:15px;}
+  .about-gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+  @media (max-width:640px){.about-gallery{grid-template-columns:1fr 1fr;}}
+  .about-gallery .img-box{aspect-ratio:4/3;}
+
+  .details-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:32px 28px;}
+  @media (max-width:900px){.details-grid{grid-template-columns:1fr 1fr;}}
+  @media (max-width:480px){.details-grid{grid-template-columns:1fr;}}
+  .detail-card .img-box{aspect-ratio:4/3;}
+  .detail-card h4{font-size:16px;font-weight:500;margin-bottom:6px;}
+  .detail-card p{color:var(--ink-soft);font-size:14px;line-height:1.55;}
+  .detail-card .img-box,
+  .details-grid .img-box{transition:transform .45s var(--ease), border-color .45s var(--ease), box-shadow .45s var(--ease);}
+  .detail-card .img-box:hover{transform:translateY(-4px);border-color:rgba(176,141,100,0.5);box-shadow:0 16px 36px rgba(176,141,100,0.16);}
+
+  /* ---------- Footer ---------- */
+  footer{border-top:1px solid var(--stone-deep);padding:56px 0 32px;}
+  .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px;margin-bottom:40px;}
+  @media (max-width:640px){.footer-grid{grid-template-columns:1fr;gap:28px;}}
+  .footer-grid h4{font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:14px;}
+  .footer-grid p, .footer-grid a{font-size:14px;color:var(--ink-soft);display:block;margin-bottom:8px;}
+  .footer-grid a:hover{color:var(--ink);}
+  .lang-toggle{display:inline-flex;gap:0;border:1px solid var(--stone-deep);border-radius:2px;overflow:hidden;}
+  .lang-toggle button{
+    font-size:12px;padding:6px 12px;border:none;background:none;cursor:pointer;color:var(--ink-soft);
+  }
+  .lang-toggle button.active{background:var(--ink);color:var(--stone-light);}
+  .lang-toggle button:disabled{cursor:not-allowed;opacity:0.5;}
+  .nav-lang{margin-right:8px;}
+  @media (max-width:820px){.nav-lang{display:none;}}
+  .mobile-menu .lang-toggle{margin:16px 20px;}
+  .footer-bottom{
+    border-top:1px solid var(--stone-deep);padding-top:24px;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
+    font-size:12px;color:var(--ink-soft);
+  }
+
+  /* ---------- Page switching ---------- */
+  .page{display:none;}
+  .page.active{display:block;}
+  .page-transition{animation:pageIn .5s var(--ease) both;}
+  @keyframes pageIn{
+    from{opacity:0;transform:translateY(14px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+
+  /* ---------- Scroll reveal ---------- */
+  .fade-up{
+    opacity:0;transform:translateY(24px);
+    transition:opacity .7s var(--ease), transform .7s var(--ease);
+  }
+  .fade-up.visible{opacity:1;transform:translateY(0);}
+  .stagger>*{transition-delay:calc(var(--i,0) * 0.08s);}
+
+  /* ---------- Card motion ---------- */
+  .img-box{transition:border-color .45s var(--ease), box-shadow .45s var(--ease);}
+  .about-teaser .img-box,
+  .location-grid .img-box,
+  .about-gallery .img-box{transition:transform .45s var(--ease), border-color .45s var(--ease), box-shadow .45s var(--ease);}
+  .about-teaser .img-box:hover,
+  .location-grid .img-box:hover,
+  .about-gallery .img-box:hover{transform:translateY(-4px);border-color:rgba(176,141,100,0.5);box-shadow:0 16px 36px rgba(176,141,100,0.16);}
+  .room-card{transition:transform .3s var(--ease);}
+  .amenity{transition:transform .3s var(--ease);}
+  .amenity:hover{transform:translateY(-3px);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav-inner">
+    <a class="wordmark" data-page="home">melo stay<span>SEOUL</span></a>
+    <nav>
+      <ul>
+        <li><a data-page="home" class="nav-link active" data-i18n="nav_home">Home</a></li>
+        <li><a data-page="rooms" class="nav-link" data-i18n="nav_rooms">Rooms</a></li>
+        <li><a data-page="about" class="nav-link" data-i18n="nav_about">About</a></li>
+      </ul>
+    </nav>
+    <div class="nav-right">
+      <div class="lang-toggle nav-lang">
+        <button class="active" data-lang="en">EN</button>
+        <button data-lang="zh">中文</button>
+        <button data-lang="ko">한국어</button>
+      </div>
+      <button class="nav-cta" data-page="book" data-i18n="nav_book">Book direct</button>
+      <button class="mobile-toggle" id="mobileToggle">☰</button>
+    </div>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a data-page="home" class="nav-link" data-i18n="nav_home">Home</a>
+    <a data-page="rooms" class="nav-link" data-i18n="nav_rooms">Rooms</a>
+    <a data-page="about" class="nav-link" data-i18n="nav_about">About</a>
+    <a data-page="book" class="nav-link" data-i18n="nav_book">Book direct</a>
+    <div class="lang-toggle">
+      <button class="active" data-lang="en">EN</button>
+      <button data-lang="zh">中文</button>
+      <button data-lang="ko">한국어</button>
+    </div>
+  </div>
+</header>
+
+<!-- ================= HOME ================= -->
+<div class="page active" id="page-home">
+
+  <div class="hero">
+    <img class="hero-photo" id="heroPhoto" src="images/hero-symmetric.jpg" alt="melo stay twin room, symmetric view">
+    <div class="hero-scrim"></div>
+    <div class="hero-content">
+      <h1 class="hero-headline" data-i18n="hero_headline">Stay calm,<br>stay melo.</h1>
+      <p class="tagline-sub" data-i18n="hero_sub">A quiet place to unwind in the heart of Seoul.</p>
+      <div class="hero-cta-row">
+        <a class="btn btn-primary" data-page="rooms"><span data-i18n="hero_cta_rooms">Explore rooms</span> <span class="arrow">→</span></a>
+        <a class="btn btn-outline" data-page="book"><span data-i18n="nav_book">Book direct</span></a>
+      </div>
+      <div class="hero-bottom-row">
+        <div class="hero-caption-line" data-i18n="hero_caption">Jongno-gu, Seoul</div>
+      </div>
+    </div>
+    <button class="hero-scroll-cue" id="heroScrollCue" aria-label="Scroll down">
+      <span class="chevron">
+        <svg width="14" height="8" viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M1 1L7 7L13 1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+    </button>
+  </div>
+
+
+  <section id="homeIntro">
+    <div class="wrap about-teaser fade-up">
+      <div class="img-box has-photo cover">
+        <img src="images/general/signage.jpg" alt="melo stay entrance signage, stay calm stay melo">
+      </div>
+      <div>
+        <h2 data-i18n="teaser_h2">Calm, on purpose.</h2>
+        <p data-i18n="teaser_p1">Seoul moves fast — markets, traffic, the constant hum of Dongdaemun just outside. melo stay is built to feel like the opposite the moment the door closes: quiet stone and oak, soft light, nowhere you need to be.</p>
+        <p data-i18n="teaser_p2">Every room is private, every detail is considered, and every guest is here because they're visiting Korea, not because they live here. We built this place with that in mind.</p>
+        <a class="text-link" data-page="about" data-i18n="teaser_link">→ More about melo stay</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="amenities">
+    <div class="wrap">
+      <div class="section-head fade-up" style="max-width:680px;">
+        <h2 data-i18n="amenities_h2">Everything you need, nothing you don't</h2>
+        <p data-i18n="amenities_p">No breakfast, no frills — just the essentials done well.</p>
+      </div>
+      <div class="amenities-grid stagger">
+        <div class="amenity fade-up" style="--i:0">
+          <div class="a-line"></div>
+          <h3 data-i18n="amenity_1_h">Shared kitchen</h3>
+          <p data-i18n="amenity_1_p">Coffee, snacks, and a ramen corner open to all guests.</p>
+        </div>
+        <div class="amenity fade-up" style="--i:1">
+          <div class="a-line"></div>
+          <h3 data-i18n="amenity_2_h">Laundry room</h3>
+          <p data-i18n="amenity_2_p">On-site laundry facilities for longer stays.</p>
+        </div>
+        <div class="amenity fade-up" style="--i:2">
+          <div class="a-line"></div>
+          <h3 data-i18n="amenity_3_h">Free Wi-Fi</h3>
+          <p data-i18n="amenity_3_p">Fast, free, in every room and common area.</p>
+        </div>
+        <div class="amenity fade-up" style="--i:3">
+          <div class="a-line"></div>
+          <h3 data-i18n="amenity_4_h">Digital keycard entry</h3>
+          <p data-i18n="amenity_4_p">Contactless access to your room, day or night.</p>
+        </div>
+        <div class="amenity fade-up" style="--i:4">
+          <div class="a-line"></div>
+          <h3 data-i18n="amenity_5_h">Luggage storage</h3>
+          <p data-i18n="amenity_5_p">Drop your bags before check-in or after check-out.</p>
+        </div>
+        <div class="amenity fade-up" style="--i:5">
+          <div class="a-line"></div>
+          <h3 data-i18n="amenity_6_h">24-hour convenience mart</h3>
+          <p data-i18n="amenity_6_p">Ground floor of the building, open around the clock.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap location-grid fade-up">
+      <div>
+        <div class="section-head">
+          <h2 data-i18n="find_h2">Find us</h2>
+          <p data-i18n="find_p">In the heart of Jongno-gu, close to everything worth walking to.</p>
+        </div>
+        <ul class="loc-list">
+          <li><span data-i18n="loc_address_l">Address</span><span data-i18n="loc_address_v">325 Jong-ro, 5th–6th Fl, Jongno-gu, Seoul</span></li>
+          <li><span data-i18n="loc_ddm_l">Dongdaemun Station</span><span data-i18n="loc_ddm_v">~5 min walk</span></li>
+          <li><span data-i18n="loc_dm_l">Dongmyo Station</span><span data-i18n="loc_dm_v">~3 min walk</span></li>
+          <li><span data-i18n="loc_checkin_l">Check-in</span><span>16:00 – 22:00</span></li>
+          <li><span data-i18n="loc_checkout_l">Check-out</span><span data-i18n="loc_checkout_v">Before 11:00</span></li>
+        </ul>
+      </div>
+      <div class="img-box map-box" style="padding:0;overflow:hidden;">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m5!3m3!1m2!1s0x357ca3449356a35b%3A0xb4907d55b5eda17b!2sMelo%20Stay!5e0!3m2!1sen!2suk!4v1790196718551!5m2!1sen!2suk" width="100%" height="100%" style="border:0;display:block;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" title="melo stay location on Google Maps"></iframe>
+      </div>
+    </div>
+  </section>
+
+  <section class="travel-guide-section">
+    <div class="wrap fade-up">
+      <div class="section-head" style="max-width:680px;">
+        <h2 data-i18n="travel_h2">Getting here from the airport</h2>
+        <p data-i18n="travel_p">A simple route from Incheon International Airport straight to our door.</p>
+      </div>
+      <div class="travel-guide-frame zoomable" onclick="openLightbox('images/general/travel-guide.png')">
+        <img src="images/general/travel-guide.png" alt="Travel guide: from Incheon Airport to melo stay by bus 6002" loading="lazy">
+        <span class="zoom-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/></svg></span>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- ================= ROOMS ================= -->
+<div class="page" id="page-rooms">
+  <section style="padding-top:64px;">
+    <div class="wrap">
+      <div class="section-head fade-up">
+        <h2 data-i18n="rooms_h2">Rooms</h2>
+        <p data-i18n="rooms_p">Eight room types across 24 rooms — grouped by bed configuration.</p>
+      </div>
+
+      <div class="room-group fade-up">
+        <div class="room-group-head">
+          <h3 data-i18n="group_twin_h">Twin rooms</h3>
+          <span data-i18n="group_twin_s">Two beds</span>
+        </div>
+        <div class="room-cards">
+          <div class="room-card" data-room="str">
+            <div class="img-box has-photo"><img src="images/rooms/str/1.jpg" alt="Standard Twin Room"></div>
+            <span class="tier" data-i18n="tier_standard">Standard</span>
+            <h4 data-i18n="room_str_name">Standard Twin</h4>
+            <p data-i18n="room_str_card">Two beds, private bathroom, everything you need for a simple stay.</p>
+            <div class="facts"><span data-i18n="fact_desk">Desk</span><span data-i18n="fact_fridge">Mini-fridge</span><span data-i18n="fact_ac">AC</span><span data-i18n="fact_tv">TV</span></div>
+            <div class="price" data-i18n="price_soon">Pricing coming soon</div>
+            <div class="view-more" data-i18n="view_more">View details →</div>
+          </div>
+          <div class="room-card" data-room="suptr">
+            <div class="img-box has-photo"><img src="images/rooms/suptr/1.jpg" alt="Superior Twin Room"></div>
+            <span class="tier" data-i18n="tier_superior">Superior</span>
+            <h4 data-i18n="room_suptr_name">Superior Twin</h4>
+            <p data-i18n="room_suptr_card">A step up from Standard, same layout with extra comfort touches.</p>
+            <div class="facts"><span data-i18n="fact_desk">Desk</span><span data-i18n="fact_fridge">Mini-fridge</span><span data-i18n="fact_ac">AC</span><span data-i18n="fact_tv">TV</span></div>
+            <div class="price" data-i18n="price_soon">Pricing coming soon</div>
+            <div class="view-more" data-i18n="view_more">View details →</div>
+          </div>
+          <div class="room-card" data-room="dctr">
+            <div class="img-box has-photo"><img src="images/rooms/dctr/1.jpg" alt="Deluxe Corner Twin Room"></div>
+            <span class="tier" data-i18n="tier_deluxe">Deluxe</span>
+            <h4 data-i18n="room_dctr_name">Deluxe Corner Twin</h4>
+            <p data-i18n="room_dctr_card">Our top twin option, set in a corner position for extra light.</p>
+            <div class="facts"><span data-i18n="fact_desk">Desk</span><span data-i18n="fact_fridge">Mini-fridge</span><span data-i18n="fact_ac">AC</span><span data-i18n="fact_tv">TV</span></div>
+            <div class="price" data-i18n="price_soon">Pricing coming soon</div>
+            <div class="view-more" data-i18n="view_more">View details →</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="room-group fade-up">
+        <div class="room-group-head">
+          <h3 data-i18n="group_double_h">Double rooms</h3>
+          <span data-i18n="group_double_s">One large bed</span>
+        </div>
+        <div class="room-cards">
+          <div class="room-card" data-room="edr">
+            <div class="img-box has-photo"><img src="images/rooms/edr/1.jpg" alt="ECO Double Room"></div>
+            <span class="tier" data-i18n="tier_economy">Economy</span>
+            <h4 data-i18n="room_edr_name">ECO Double</h4>
+            <p data-i18n="room_edr_card">Our most compact option, for travelers who just need a simple place to sleep.</p>
+            <div class="facts"><span data-i18n="fact_desk">Desk</span><span data-i18n="fact_fridge">Mini-fridge</span><span data-i18n="fact_ac">AC</span><span data-i18n="fact_tv">TV</span></div>
+            <div class="price" data-i18n="price_soon">Pricing coming soon</div>
+            <div class="view-more" data-i18n="view_more">View details →</div>
+          </div>
+          <div class="room-card" data-room="sdr">
+            <div class="img-box has-photo"><img src="images/rooms/sdr/1.jpg" alt="Standard Double Room"></div>
+            <span class="tier" data-i18n="tier_standard">Standard</span>
+            <h4 data-i18n="room_sdr_name">Standard Double</h4>
+            <p data-i18n="room_sdr_card">One bed, private bathroom, quiet and simple.</p>
+            <div class="facts"><span data-i18n="fact_desk">Desk</span><span data-i18n="fact_fridge">Mini-fridge</span><span data-i18n="fact_ac">AC</span><span data-i18n="fact_tv">TV</span></div>
+            <div class="price" data-i18n="price_soon">Pricing coming soon</div>
+            <div class="view-more" data-i18n="view_more">View details →</div>
+          </div>
+          <div class="room-card" data-room="supdr">
+            <div class="img-box has-photo"><img src="images/rooms/supdr/1.jpg" alt="Superior Double Room"></div>
+            <span class="tier" data-i18n="tier_superior">Superior</span>
+            <h4 data-i18n="room_supdr_name">Superior Double</h4>
+            <p data-i18n="room_supdr_card">A step up from Standard, same layout with extra comfort touches.</p>
+            <div class="facts"><span data-i18n="fact_desk">Desk</span><span data-i18n="fact_fridge">Mini-fridge</span><span data-i18n="fact_ac">AC</span><span data-i18n="fact_tv">TV</span></div>
+            <div class="price" data-i18n="price_soon">Pricing coming soon</div>
+            <div class="view-more" data-i18n="view_more">View details →</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="room-group fade-up">
+        <div class="room-group-head">
+          <h3 data-i18n="group_family_h">Family rooms</h3>
+          <span data-i18n="group_family_s">Best for groups</span>
+        </div>
+        <div class="room-cards">
+          <div class="room-card" data-room="ftr">
+            <div class="img-box has-photo"><img src="images/rooms/ftr/1.jpg" alt="Family Twin Room"></div>
+            <span class="tier" data-i18n="tier_family">Family</span>
+            <h4 data-i18n="room_ftr_name">Family Twin</h4>
+            <p data-i18n="room_ftr_card">Extra space for families or small groups traveling together.</p>
+            <div class="facts"><span data-i18n="fact_desk">Desk</span><span data-i18n="fact_fridge">Mini-fridge</span><span data-i18n="fact_ac">AC</span><span data-i18n="fact_tv">TV</span></div>
+            <div class="price" data-i18n="price_soon">Pricing coming soon</div>
+            <div class="view-more" data-i18n="view_more">View details →</div>
+          </div>
+          <div class="room-card" data-room="dftr">
+            <div class="img-box has-photo"><img src="images/rooms/dftr/1.jpg" alt="Deluxe Family Twin Room"></div>
+            <span class="tier" data-i18n="tier_deluxe">Deluxe</span>
+            <h4 data-i18n="room_dftr_name">Deluxe Family Twin</h4>
+            <p data-i18n="room_dftr_card">Our largest room type, built for families who want extra room to spread out.</p>
+            <div class="facts"><span data-i18n="fact_desk">Desk</span><span data-i18n="fact_fridge">Mini-fridge</span><span data-i18n="fact_ac">AC</span><span data-i18n="fact_tv">TV</span></div>
+            <div class="price" data-i18n="price_soon">Pricing coming soon</div>
+            <div class="view-more" data-i18n="view_more">View details →</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</div>
+
+<!-- ================= ABOUT ================= -->
+<div class="page" id="page-about">
+  <section class="about-hero">
+    <div class="wrap fade-up">
+      <div class="section-head">
+        <h2 data-i18n="about_h2">About melo stay</h2>
+        <p data-i18n="about_tagline">Seoul outside. melo inside.</p>
+      </div>
+      <img class="about-hero-photo" src="images/about-reception.jpg" alt="melo stay reception, &quot;stay calm, stay melo&quot;">
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap about-story fade-up">
+      <div>
+        <p data-i18n="about_p1">Seoul doesn't slow down. Markets spill onto the sidewalks, traffic never really stops, and Dongdaemun hums at all hours. melo stay sits right in the middle of it — and was built to feel like nothing outside exists once you're through the door.</p>
+        <p data-i18n="about_p2">The name says it plainly: stay calm, stay melo. It's the phrase printed at our entrance, and it's the idea behind every room — warm stone, natural oak, quiet light, nothing extra.</p>
+      </div>
+      <div>
+        <p data-i18n="about_p3">We opened in 2026 with one goal: give travelers visiting Korea a private, comfortable, unfussy place to land. No breakfast rush, no long check-in lines — just 24 rooms, a shared kitchen, and a neighborhood worth stepping back out into whenever you're ready.</p>
+        <p data-i18n="about_p4">Whether you're here for a night or a week, melo stay is designed to get out of your way and let Seoul do the rest.</p>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0;padding-bottom:48px;">
+    <div class="wrap about-gallery fade-up">
+      <div class="img-box has-photo cover"><img src="images/general/hallway2.jpg" alt="melo stay hallway with room 612"></div>
+      <div class="img-box has-photo cover"><img src="images/general/hallway-wayfinding.jpg" alt="Hallway wayfinding signage pointing to rooms 602 to 612"></div>
+      <div class="img-box has-photo cover"><img src="images/general/room-window-corner.jpg" alt="Guest room with sheer curtains and window light"></div>
+    </div>
+  </section>
+
+  <section style="padding-top:0;">
+    <div class="wrap fade-up">
+      <div class="section-head" style="max-width:640px;">
+        <h2 data-i18n="details_h2">Attention to detail</h2>
+        <p data-i18n="details_p">Laundry facilities, a relaxed guest lounge, genuine Han River-style ramen machines, and all the little amenities that make a stay feel considered — done properly.</p>
+      </div>
+      <div class="details-grid stagger" id="detailsGrid"></div>
+    </div>
+  </section>
+</div>
+
+<!-- ================= BOOK ================= -->
+<div class="page" id="page-book">
+  <section class="book-band fade-up" style="padding-top:96px;padding-bottom:64px;">
+    <div class="wrap">
+      <h2 data-i18n="book_h2">Book directly with us</h2>
+      <p data-i18n="book_p">Reach out by phone or email and we'll help you find the right room — no booking fees, straight to us.</p>
+      <a class="book-cta" href="mailto:melostayseoul@gmail.com">melostayseoul@gmail.com</a>
+      <div class="ota-note">
+        <span data-i18n="ota_label">Also available on</span>
+        <div class="ota-links">
+          <a class="ota-link" href="https://www.booking.com/Share-TuDoV9h" target="_blank" rel="noopener">
+            <svg class="ota-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 8h5a2 2 0 0 1 0 4H8zM8 12h6a2 2 0 0 1 0 4H8z"/></svg>
+            Booking.com
+          </a>
+          <a class="ota-link" href="https://www.trip.com/w/1slD11jXSW2" target="_blank" rel="noopener">
+            <svg class="ota-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 12l3-7h12l3 7-3 7H6z"/><path d="M12 5v14"/></svg>
+            Trip.com
+          </a>
+          <a class="ota-link" href="https://www.agoda.com/melo-stay-seoul-h96011950/hotel/seoul-kr.html" target="_blank" rel="noopener">
+            <svg class="ota-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+            Agoda
+          </a>
+        </div>
+        <span class="ota-phone">+82-10-4093-8977</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="enquiry-section fade-up" style="padding-top:0;">
+    <div class="wrap">
+      <div class="section-head" style="max-width:560px;margin:0 auto;text-align:center;">
+        <h2 data-i18n="enquiry_h2">Or send an enquiry</h2>
+        <p data-i18n="enquiry_p">Dates, room type, number of guests — we'll reply by email, usually within a day.</p>
+      </div>
+      <form class="enquiry-form" id="enquiryForm" action="https://api.web3forms.com/submit" method="POST">
+        <div class="form-row">
+          <label>
+            <span data-i18n="enquiry_name">Name</span>
+            <input type="text" name="name" autocomplete="name" required>
+          </label>
+          <label>
+            <span data-i18n="enquiry_email">Email</span>
+            <input type="email" name="email" autocomplete="email" required>
+          </label>
+        </div>
+        <label>
+          <span data-i18n="enquiry_message">Message</span>
+          <textarea name="message" rows="5" required placeholder="Dates, room type, number of guests..."></textarea>
+        </label>
+        <input type="hidden" name="access_key" value="472101d0-52b1-4194-8914-5f1c5a3aef70">
+        <input type="hidden" name="subject" value="New enquiry from melo stay website">
+        <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off">
+        <div class="h-captcha" data-captcha="true"></div>
+        <button type="submit" class="btn btn-primary" id="enquirySubmit"><span data-i18n="enquiry_send">Send enquiry</span></button>
+        <p class="enquiry-status" id="enquiryStatus" role="status"></p>
+      </form>
+    </div>
+  </section>
+</div>
+
+<!-- ================= ROOM DETAIL MODAL ================= -->
+<div class="room-modal-overlay" id="roomModalOverlay">
+  <div class="room-modal">
+    <button class="room-modal-close" id="roomModalClose">&times;</button>
+    <span class="tier" id="rmTier">Standard</span>
+    <h2 id="rmName">Room name</h2>
+    <p class="rm-sub" id="rmSub">Two beds · Private bathroom</p>
+
+    <div class="room-modal-gallery">
+      <div class="gallery-main">
+        <div class="img-box" id="rmGalleryMain"></div>
+        <button class="gallery-nav-btn prev" id="rmGalleryPrev" aria-label="Previous photo">‹</button>
+        <button class="gallery-nav-btn next" id="rmGalleryNext" aria-label="Next photo">›</button>
+        <div class="gallery-counter" id="rmGalleryCounter">1 / 1</div>
+      </div>
+      <div class="gallery-thumbs" id="rmGalleryThumbs"></div>
+    </div>
+
+    <div class="room-modal-body">
+      <div>
+        <p id="rmDescription">Description.</p>
+        <p id="rmDescription2"></p>
+      </div>
+      <div>
+        <ul class="room-modal-facts">
+          <h4 data-i18n="modal_facts_h">Room facts</h4>
+          <li id="rmFactSize"><span data-i18n="modal_fact_size">Room size</span><span>—</span></li>
+          <li id="rmFactBeds"><span data-i18n="modal_fact_beds">Beds</span><span>—</span></li>
+          <li id="rmFactBath"><span data-i18n="modal_fact_bath">Bathroom</span><span data-i18n="modal_fact_bath_v">Private, ensuite</span></li>
+          <li id="rmFactAmenities"><span data-i18n="modal_fact_inroom">In-room</span><span data-i18n="modal_fact_inroom_v">Desk · Mini-fridge · AC · TV</span></li>
+        </ul>
+        <div class="room-modal-price" id="rmPrice" data-i18n="price_soon">Pricing coming soon</div>
+        <a class="room-modal-cta" data-page="book" id="rmCta" data-i18n="modal_enquire">Enquire about this room</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <h4>melo stay</h4>
+        <p style="color:var(--ink);max-width:320px;" data-i18n="footer_address">325 Jong-ro, 5th–6th Fl, Changsin Glass Tower, Jongno-gu, Seoul</p>
+        <p>+82-10-4093-8977</p>
+        <p>melostayseoul@gmail.com</p>
+      </div>
+      <div>
+        <h4 data-i18n="footer_explore">Explore</h4>
+        <a data-page="home" class="nav-link" data-i18n="nav_home">Home</a>
+        <a data-page="rooms" class="nav-link" data-i18n="nav_rooms">Rooms</a>
+        <a data-page="about" class="nav-link" data-i18n="nav_about">About</a>
+      </div>
+      <div>
+        <h4 data-i18n="footer_hours">Hours</h4>
+        <p data-i18n="footer_checkin">Check-in 16:00–22:00</p>
+        <p data-i18n="footer_checkout">Check-out before 11:00</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span data-i18n="footer_copy">© 2026 melo stay, Seoul</span>
+      <span data-i18n="hero_tagline">Stay calm, stay melo.</span>
+    </div>
+  </div>
+</footer>
+
+<div class="lightbox-overlay" id="lightboxOverlay" onclick="closeLightbox()">
+  <button class="lightbox-close" id="lightboxClose" aria-label="Close" onclick="closeLightbox(event)">&times;</button>
+  <button class="lightbox-nav-btn prev" id="lightboxPrev" aria-label="Previous photo" onclick="event.stopPropagation(); stepLightbox(-1)">&lsaquo;</button>
+  <img class="lightbox-img" id="lightboxImg" src="" alt="" onclick="event.stopPropagation()">
+  <button class="lightbox-nav-btn next" id="lightboxNext" aria-label="Next photo" onclick="event.stopPropagation(); stepLightbox(1)">&rsaquo;</button>
+  <div class="lightbox-counter" id="lightboxCounter"></div>
+</div>
+
+<script>
+  const links = document.querySelectorAll('[data-page]');
+  const pages = document.querySelectorAll('.page');
+  const navLinks = document.querySelectorAll('.nav-link');
+  // Declared up here (not down by the rest of the room-modal code) because
+  // setLanguage() below references it, and setLanguage() can run immediately
+  // on page load (via initLanguage) if a language was already saved from a
+  // previous visit — referencing a later `const` before its own line runs
+  // throws "Cannot access before initialization" and silently kills the
+  // entire script, including the scroll-reveal setup at the bottom.
+  const roomModalOverlay = document.getElementById('roomModalOverlay');
+  let currentRoomKey = null;
+
+  // Declared up here for the same reason as roomModalOverlay above.
+  const lightboxOverlay = document.getElementById('lightboxOverlay');
+  const lightboxImg = document.getElementById('lightboxImg');
+  const lightboxPrev = document.getElementById('lightboxPrev');
+  const lightboxNext = document.getElementById('lightboxNext');
+  const lightboxCounter = document.getElementById('lightboxCounter');
+  let lightboxSet = [];
+  let lightboxIndex = 0;
+
+  function renderLightbox(){
+    if(!lightboxImg || !lightboxSet.length) return;
+    const item = lightboxSet[lightboxIndex];
+    lightboxImg.src = typeof item === 'string' ? item : item.src;
+    lightboxImg.alt = typeof item === 'string' ? '' : (item.alt || '');
+    const multi = lightboxSet.length > 1;
+    if(lightboxPrev) lightboxPrev.style.display = multi ? 'flex' : 'none';
+    if(lightboxNext) lightboxNext.style.display = multi ? 'flex' : 'none';
+    if(lightboxCounter) lightboxCounter.textContent = multi ? (lightboxIndex + 1) + ' / ' + lightboxSet.length : '';
+  }
+  function openLightbox(src){
+    openGallery([src], 0);
+  }
+  function openGallery(items, index){
+    if(!lightboxOverlay || !lightboxImg) return;
+    lightboxSet = items;
+    lightboxIndex = index || 0;
+    renderLightbox();
+    lightboxOverlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  const DETAIL_PHOTOS = [
+    { src:'images/general/ramen-machines.jpg', alt:'Han-Kang (Han-River) Ramen cooking machines in the laundry room' },
+    { src:'images/general/toiletries.jpg', alt:'Shampoo, conditioner, and body wash bottles above the bathroom sink' },
+    { src:'images/general/air-purifier.jpg', alt:'Air purifier near reception' },
+    { src:'images/general/hairdryer.jpg', alt:'In-room hairdryer' },
+    { src:'images/general/wayfinding.jpg', alt:'Stone wall signage pointing to the laundry facility and lounge' },
+    { src:'images/general/amenity-kit.jpg', alt:'Bathroom amenity kit with toothbrush, soap, and toiletries' },
+    { src:'images/general/coffee-snacks-sign.jpg', alt:'Coffee and snacks corner signage' },
+    { src:'images/general/kitchen-appliances.jpg', alt:'Shared kitchen counter with water dispenser, microwave, and kettle' },
+    { src:'images/general/coffee-corner.jpg', alt:'Coffee and snacks corner with hallway to guest rooms' },
+    { src:'images/general/entrance-door.jpg', alt:'6th floor entrance door with the melo stay Seoul plaque' },
+    { src:'images/general/hallway.jpg', alt:'Guest room hallway with digital keycard door locks' },
+    { src:'images/general/keycard.jpg', alt:'Digital room keycard with the stay calm, stay melo design' },
+    { src:'images/general/tv-remote.jpg', alt:'In-room TV remote controls' }
+  ];
+  const detailsGrid = document.getElementById('detailsGrid');
+  if(detailsGrid){
+    detailsGrid.innerHTML = DETAIL_PHOTOS.map((p, i) =>
+      '<div class="detail-card fade-up" style="--i:' + (i % 8) + '">' +
+        '<div class="img-box has-photo cover zoomable" onclick="openGallery(DETAIL_PHOTOS, ' + i + ')">' +
+          '<img src="' + p.src + '" alt="' + p.alt + '" loading="lazy">' +
+          '<span class="zoom-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/></svg></span>' +
+        '</div>' +
+      '</div>'
+    ).join('');
+  }
+
+  function stepLightbox(dir){
+    if(!lightboxSet.length) return;
+    lightboxIndex = (lightboxIndex + dir + lightboxSet.length) % lightboxSet.length;
+    renderLightbox();
+  }
+  function closeLightbox(e){
+    if(e) e.stopPropagation();
+    if(!lightboxOverlay) return;
+    lightboxOverlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', (e) => {
+    if(!lightboxOverlay || !lightboxOverlay.classList.contains('open')) return;
+    if(e.key === 'Escape') closeLightbox();
+    if(e.key === 'ArrowLeft') stepLightbox(-1);
+    if(e.key === 'ArrowRight') stepLightbox(1);
+  });
+
+  function showPage(id){
+    pages.forEach(p => p.classList.remove('active'));
+    const target = document.getElementById('page-' + id);
+    if(target){
+      target.classList.add('active', 'page-transition');
+      setTimeout(() => target.classList.remove('page-transition'), 500);
+    }
+    window.scrollTo({top:0,behavior:'instant'});
+    navLinks.forEach(l => l.classList.toggle('active', l.dataset.page === id));
+    document.getElementById('mobileMenu').classList.remove('open');
+    observeFadeUps();
+  }
+
+  // ---------- Scroll reveal ----------
+  function observeFadeUps(){
+    const els = document.querySelectorAll('.fade-up:not(.visible)');
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          entry.target.classList.add('visible');
+          obs.unobserve(entry.target);
+        }
+      });
+    }, {threshold:0.15});
+    els.forEach(el => obs.observe(el));
+  }
+
+  // ---------- Nav shadow on scroll ----------
+  const siteHeader = document.querySelector('header');
+  window.addEventListener('scroll', () => {
+    siteHeader.classList.toggle('scrolled', window.scrollY > 12);
+  });
+
+  links.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      showPage(link.dataset.page);
+    });
+  });
+
+  document.getElementById('mobileToggle').addEventListener('click', () => {
+    document.getElementById('mobileMenu').classList.toggle('open');
+  });
+
+  // ---------- Translations (EN live, ZH live, KO stubbed) ----------
+  // "hero_tagline" (footer signature), "hero_headline" (hero H1) and
+  // "about_tagline" are deliberately absent from the zh/ko dictionaries
+  // below — per Ed's instruction these catchphrases ("Stay calm, stay
+  // melo." / "Seoul outside. melo inside.") always stay in English
+  // regardless of selected language. applyTranslations() simply leaves an
+  // element's original (English) text untouched when the current
+  // language's dictionary has no entry for its key.
+  const I18N = {
+    en: {
+      nav_home:'Home', nav_rooms:'Rooms', nav_about:'About', nav_book:'Book direct',
+      hero_tagline:'Stay calm, stay melo.',
+      hero_headline:'Stay calm,<br>stay melo.',
+      hero_sub:'A quiet place to unwind in the heart of Seoul.',
+      hero_caption:'Jongno-gu, Seoul',
+      hero_cta_rooms:'Explore rooms',
+      teaser_h2:'Calm, on purpose.',
+      teaser_p1:"Seoul moves fast — markets, traffic, the constant hum of Dongdaemun just outside. melo stay is built to feel like the opposite the moment the door closes: quiet stone and oak, soft light, nowhere you need to be.",
+      teaser_p2:"Every room is private, every detail is considered, and every guest is here because they're visiting Korea, not because they live here. We built this place with that in mind.",
+      teaser_link:'→ More about melo stay',
+      amenities_h2:"Everything you need, nothing you don't",
+      amenities_p:'No breakfast, no frills — just the essentials done well.',
+      amenity_1_h:'Shared kitchen', amenity_1_p:'Coffee, snacks, and a ramen corner open to all guests.',
+      amenity_2_h:'Laundry room', amenity_2_p:'On-site laundry facilities for longer stays.',
+      amenity_3_h:'Free Wi-Fi', amenity_3_p:'Fast, free, in every room and common area.',
+      amenity_4_h:'Digital keycard entry', amenity_4_p:'Contactless access to your room, day or night.',
+      amenity_5_h:'Luggage storage', amenity_5_p:'Drop your bags before check-in or after check-out.',
+      amenity_6_h:'24-hour convenience mart', amenity_6_p:'Ground floor of the building, open around the clock.',
+      find_h2:'Find us', find_p:'In the heart of Jongno-gu, close to everything worth walking to.',
+      travel_h2:'Getting here from the airport', travel_p:'A simple route from Incheon International Airport straight to our door.',
+      loc_address_l:'Address', loc_address_v:'325 Jong-ro, 5th–6th Fl, Jongno-gu, Seoul',
+      loc_ddm_l:'Dongdaemun Station', loc_ddm_v:'~5 min walk',
+      loc_dm_l:'Dongmyo Station', loc_dm_v:'~3 min walk',
+      loc_checkin_l:'Check-in',
+      loc_checkout_l:'Check-out', loc_checkout_v:'Before 11:00',
+      rooms_h2:'Rooms', rooms_p:'Eight room types across 24 rooms — grouped by bed configuration.',
+      group_twin_h:'Twin rooms', group_twin_s:'Two beds',
+      group_double_h:'Double rooms', group_double_s:'One large bed',
+      group_family_h:'Family rooms', group_family_s:'Best for groups',
+      tier_standard:'Standard', tier_superior:'Superior', tier_deluxe:'Deluxe', tier_economy:'Economy', tier_family:'Family',
+      fact_desk:'Desk', fact_fridge:'Mini-fridge', fact_ac:'AC', fact_tv:'TV',
+      price_soon:'Pricing coming soon', view_more:'View details →',
+      room_str_name:'Standard Twin', room_str_card:'Two beds, private bathroom, everything you need for a simple stay.',
+      room_suptr_name:'Superior Twin', room_suptr_card:'A step up from Standard, same layout with extra comfort touches.',
+      room_dctr_name:'Deluxe Corner Twin', room_dctr_card:'Our top twin option, set in a corner position for extra light.',
+      room_edr_name:'ECO Double', room_edr_card:'Our most compact option, for travelers who just need a simple place to sleep.',
+      room_sdr_name:'Standard Double', room_sdr_card:'One bed, private bathroom, quiet and simple.',
+      room_supdr_name:'Superior Double', room_supdr_card:'A step up from Standard, same layout with extra comfort touches.',
+      room_ftr_name:'Family Twin', room_ftr_card:'Extra space for families or small groups traveling together.',
+      room_dftr_name:'Deluxe Family Twin', room_dftr_card:'Our largest room type, built for families who want extra room to spread out.',
+      about_h2:'About melo stay',
+      about_tagline:'Seoul outside. melo inside.',
+      about_p1:"Seoul doesn't slow down. Markets spill onto the sidewalks, traffic never really stops, and Dongdaemun hums at all hours. melo stay sits right in the middle of it — and was built to feel like nothing outside exists once you're through the door.",
+      about_p2:"The name says it plainly: stay calm, stay melo. It's the phrase printed at our entrance, and it's the idea behind every room — warm stone, natural oak, quiet light, nothing extra.",
+      about_p3:"We opened in 2026 with one goal: give travelers visiting Korea a private, comfortable, unfussy place to land. No breakfast rush, no long check-in lines — just 24 rooms, a shared kitchen, and a neighborhood worth stepping back out into whenever you're ready.",
+      about_p4:"Whether you're here for a night or a week, melo stay is designed to get out of your way and let Seoul do the rest.",
+      details_h2:'Attention to detail', details_p:"Laundry facilities, a relaxed guest lounge, genuine Han River-style ramen machines, and all the little amenities that make a stay feel considered — done properly.",
+      book_h2:'Book directly with us',
+      book_p:"Reach out by phone or email and we'll help you find the right room — no booking fees, straight to us.",
+      ota_label:'Also available on',
+      enquiry_h2:'Or send an enquiry', enquiry_p:"Dates, room type, number of guests — we'll reply by email, usually within a day.",
+      enquiry_name:'Name', enquiry_email:'Email', enquiry_message:'Message', enquiry_send:'Send enquiry',
+      enquiry_success:"Thanks — we'll be in touch by email soon.", enquiry_error:'Something went wrong — please email us directly at melostayseoul@gmail.com.',
+      modal_facts_h:'Room facts', modal_fact_size:'Room size', modal_fact_beds:'Beds',
+      modal_fact_bath:'Bathroom', modal_fact_bath_v:'Private, ensuite',
+      modal_fact_inroom:'In-room', modal_fact_inroom_v:'Desk · Mini-fridge · AC · TV',
+      modal_enquire:'Enquire about this room',
+      footer_explore:'Explore', footer_hours:'Hours',
+      footer_checkin:'Check-in 16:00–22:00', footer_checkout:'Check-out before 11:00',
+      footer_copy:'© 2026 melo stay, Seoul',
+      footer_address:'325 Jong-ro, 5th–6th Fl, Changsin Glass Tower, Jongno-gu, Seoul'
+    },
+    zh: {
+      nav_home:'首页', nav_rooms:'客房', nav_about:'关于我们', nav_book:'直接预订',
+      hero_sub:'首尔市中心的静谧居所。',
+      hero_caption:'首尔钟路区',
+      hero_cta_rooms:'探索客房',
+      teaser_h2:'安静，是我们刻意的选择。',
+      teaser_p1:'首尔节奏很快——市场喧闹、车流不息、东大门的嘈杂就在门外。melo stay 的设计初衷正相反：门一关上，便是安静的石材与橡木、柔和的灯光，无需赶往任何地方。',
+      teaser_p2:'每一间客房都是独立私人空间，每一处细节都经过用心考量。我们的客人来这里是为了游览韩国，而不是常住于此——这正是我们建造这里时始终牢记的一点。',
+      teaser_link:'→ 了解更多关于 melo stay',
+      amenities_h2:'该有的都有，不该有的都没有',
+      amenities_p:'不提供早餐，没有多余装饰——把基本设施做到位。',
+      amenity_1_h:'共享厨房', amenity_1_p:'咖啡、零食，还有一个开放给所有客人的拉面角。',
+      amenity_2_h:'洗衣房', amenity_2_p:'提供现场洗衣设施，方便长住旅客。',
+      amenity_3_h:'免费Wi-Fi', amenity_3_p:'客房及公共区域均可高速免费上网。',
+      amenity_4_h:'数字门卡入住', amenity_4_p:'全天候无接触进入您的客房。',
+      amenity_5_h:'行李寄存', amenity_5_p:'入住前或退房后均可寄存行李。',
+      amenity_6_h:'24小时便利店', amenity_6_p:'位于大楼一层，全天候营业。',
+      find_h2:'如何抵达', find_p:'地处钟路区中心，周边景点均可步行前往。',
+      loc_address_l:'地址',
+      loc_ddm_l:'东大门站', loc_ddm_v:'步行约5分钟',
+      loc_dm_l:'东庙站', loc_dm_v:'步行约3分钟',
+      loc_checkin_l:'入住时间',
+      loc_checkout_l:'退房时间', loc_checkout_v:'11:00前',
+      rooms_h2:'客房', rooms_p:'24间客房，共八种房型——按床型分类。',
+      group_twin_h:'双床房', group_twin_s:'两张床',
+      group_double_h:'大床房', group_double_s:'一张大床',
+      group_family_h:'家庭房', group_family_s:'适合多人出行',
+      tier_standard:'标准', tier_superior:'高级', tier_deluxe:'豪华', tier_economy:'经济', tier_family:'家庭',
+      fact_desk:'书桌', fact_fridge:'迷你冰箱', fact_ac:'空调', fact_tv:'电视',
+      price_soon:'价格即将公布', view_more:'查看详情 →',
+      room_str_name:'标准双床房', room_str_card:'两张床，独立卫浴，简单舒适的住宿之选。',
+      room_suptr_name:'高级双床房', room_suptr_card:'在标准房基础上升级，格局相同，细节更舒适。',
+      room_dctr_name:'豪华转角双床房', room_dctr_card:'我们最高等级的双床房型，位于转角位置，采光更佳。',
+      room_edr_name:'经济大床房', room_edr_card:'我们最紧凑的房型，适合只需要一处简单落脚点的旅客。',
+      room_sdr_name:'标准大床房', room_sdr_card:'一张大床，独立卫浴，安静简约。',
+      room_supdr_name:'高级大床房', room_supdr_card:'在标准房基础上升级，格局相同，细节更舒适。',
+      room_ftr_name:'家庭双床房', room_ftr_card:'为结伴出行的家庭或小团体提供更多空间。',
+      room_dftr_name:'豪华家庭双床房', room_dftr_card:'我们最大的房型，专为想要更宽敞空间的家庭而设。',
+      about_h2:'关于 melo stay',
+      about_p1:'首尔从不停歇。市场摊位延伸到人行道上，车流川流不息，东大门全天喧闹。melo stay 就坐落在这一切的中心——我们希望，一旦踏入房门，仿佛外面的一切都不存在了。',
+      about_p2:'名字已经说明了一切：stay calm, stay melo（保持平静，保持melo）。这句话印在我们的入口处，也是每一间客房的设计理念——温润的石材、天然橡木、柔和的灯光，不多加任何装饰。',
+      about_p3:'我们于2026年开业，只为一个目标：为来韩国旅行的旅客提供一处私密、舒适、不繁琐的落脚地。没有早餐高峰,没有冗长的办理入住队伍——只有24间客房、一个共享厨房，以及一个值得您随时走出去探索的街区。',
+      about_p4:'无论您停留一晚还是一周，melo stay 都致力于不打扰您，把首尔的精彩留给您自己去发现。',
+      book_h2:'直接向我们预订',
+      book_p:'通过电话或邮件联系我们，我们将帮您找到合适的房型——无预订费，直接与我们沟通。',
+      ota_label:'同时上架于',
+      modal_facts_h:'房间信息', modal_fact_size:'房间面积', modal_fact_beds:'床型',
+      modal_fact_bath:'卫浴', modal_fact_bath_v:'独立卫浴',
+      modal_fact_inroom:'房内设施', modal_fact_inroom_v:'书桌 · 迷你冰箱 · 空调 · 电视',
+      modal_enquire:'咨询此房型',
+      footer_explore:'快速链接', footer_hours:'营业时间',
+      footer_checkin:'入住时间 16:00–22:00', footer_checkout:'退房时间 11:00前',
+      footer_copy:'© 2026 melo stay, 首尔'
+    },
+    ko: {
+      nav_home:'홈', nav_rooms:'객실', nav_about:'소개', nav_book:'직접 예약',
+      hero_sub:'복잡한 서울 한가운데, 잠시 느려지는 곳.',
+      hero_caption:'서울 종로구',
+      hero_cta_rooms:'객실 둘러보기',
+      teaser_h2:'바깥은 서울, 안은 melo.',
+      teaser_p1:'서울은 늘 분주합니다. 시장 골목과 오가는 사람들, 차들로 가득한 거리, 가까이 이어지는 동대문의 활기까지. melo stay는 그 한가운데 있지만, 문을 닫는 순간만큼은 조금 다릅니다. 따뜻한 나무와 돌, 은은한 빛. 서울의 속도에서 잠시 벗어나 편히 머물 수 있도록 만들었습니다.',
+      teaser_p2:'객실 하나부터 작은 디테일까지, 한국을 찾아온 여행자의 입장에서 생각했습니다. 필요한 것은 제대로 갖추고, 불필요한 것은 덜어냈습니다.',
+      teaser_link:'→ melo stay 이야기',
+      amenities_h2:'필요한 건 다, 번거로운 건 없이.',
+      amenities_p:'조식이나 불필요한 서비스는 덜고, 머무는 데 필요한 것들은 제대로 준비했습니다.',
+      amenity_1_h:'공용 키친', amenity_1_p:'커피와 간단한 스낵, 한강 라면 기계까지 자유롭게 이용하세요.',
+      amenity_2_h:'세탁실', amenity_2_p:'여행 중에도 편하게 이용할 수 있는 세탁 시설을 마련했습니다.',
+      amenity_3_h:'무료 Wi-Fi', amenity_3_p:'객실과 공용 공간 어디서든 빠르고 자유롭게.',
+      amenity_4_h:'디지털 키카드', amenity_4_p:'낮이든 늦은 밤이든, 기다릴 필요 없이 바로 객실로.',
+      amenity_5_h:'짐 보관', amenity_5_p:'체크인 전에도, 체크아웃 후에도 가볍게 서울을 둘러보세요.',
+      amenity_6_h:'24시간 편의점', amenity_6_p:'건물 1층에 있어 언제든 필요한 것을 바로 살 수 있습니다.',
+      find_h2:'오시는 길', find_p:'종로 한가운데, 서울 어디로든 편하게.',
+      loc_address_l:'주소', loc_address_v:'서울특별시 종로구 종로 325, 5-6층',
+      loc_ddm_l:'동대문역', loc_ddm_v:'도보 약 5분',
+      loc_dm_l:'동묘앞역', loc_dm_v:'도보 약 3분',
+      loc_checkin_l:'체크인',
+      loc_checkout_l:'체크아웃', loc_checkout_v:'11:00 이전',
+      travel_h2:'공항에서 오는 길', travel_p:'인천공항에서 melo stay까지, 어렵지 않게 오실 수 있어요.',
+      rooms_h2:'객실', rooms_p:'24개 객실, 총 8가지 객실 타입 — 침대 구성별로 분류했습니다.',
+      group_twin_h:'트윈룸', group_twin_s:'침대 2개',
+      group_double_h:'더블룸', group_double_s:'큰 침대 1개',
+      group_family_h:'패밀리룸', group_family_s:'단체 여행에 적합',
+      tier_standard:'스탠다드', tier_superior:'슈페리어', tier_deluxe:'디럭스', tier_economy:'이코노미', tier_family:'패밀리',
+      fact_desk:'책상', fact_fridge:'미니냉장고', fact_ac:'에어컨', fact_tv:'TV',
+      price_soon:'가격 안내 예정', view_more:'자세히 보기 →',
+      room_str_name:'스탠다드 트윈', room_str_card:'침대 2개, 개인 욕실, 단순하고 편안한 투숙에 필요한 모든 것.',
+      room_suptr_name:'슈페리어 트윈', room_suptr_card:'스탠다드와 동일한 구조에 편안함을 더한 업그레이드 객실.',
+      room_dctr_name:'디럭스 코너 트윈', room_dctr_card:'코너에 위치해 채광이 좋은 저희 최상급 트윈룸.',
+      room_edr_name:'이코노미 더블', room_edr_card:'단순히 잠잘 곳이 필요한 여행자를 위한 가장 아담한 객실.',
+      room_sdr_name:'스탠다드 더블', room_sdr_card:'침대 1개, 개인 욕실을 갖춘 조용하고 심플한 객실.',
+      room_supdr_name:'슈페리어 더블', room_supdr_card:'스탠다드와 동일한 구조에 편안함을 더한 업그레이드 객실.',
+      room_ftr_name:'패밀리 트윈', room_ftr_card:'함께 여행하는 가족이나 소규모 그룹을 위한 넉넉한 공간.',
+      room_dftr_name:'디럭스 패밀리 트윈', room_dftr_card:'더 넓은 공간을 원하는 가족을 위한 저희 최대 규모 객실.',
+      about_h2:'melo stay 소개',
+      about_p1:'서울은 늘 분주합니다. 골목마다 이어지는 시장과 사람들, 쉴 새 없이 오가는 차들, 밤늦게까지 이어지는 동대문의 활기. melo stay는 그 한가운데에 있습니다. 하지만 문을 닫고 들어오는 순간만큼은, 바깥의 서울을 잠시 잊을 수 있기를 바랐습니다.',
+      about_p2:'stay calm, stay melo. 이름에 저희가 만들고 싶었던 공간을 담았습니다. 따뜻한 나무와 돌, 은은한 조명, 그리고 꼭 필요한 것만 남긴 객실. 편안하게 머물다 다시 서울로 나갈 수 있는 곳을 만들고 싶었습니다.',
+      about_p3:'2026년 문을 연 melo stay에는 24개의 객실과 공용 키친, 세탁 공간과 라운지가 있습니다. 여행 중 필요한 것들은 빠짐없이 준비하되, 굳이 필요하지 않은 것은 덜어냈습니다.',
+      about_p4:'하룻밤을 머물든 일주일을 머물든, 이곳에서만큼은 서두를 필요 없이. 서울은 마음껏 즐기고, 돌아와서는 편히 쉬어가세요.',
+      details_h2:'작은 것까지, 제대로.', details_p:'세탁 시설부터 편하게 머물 수 있는 라운지, 한강에서 즐기던 방식 그대로의 라면 기계까지. 머무는 동안 필요한 작은 것들도 하나하나 제대로 준비했습니다.',
+      book_h2:'직접 예약하기',
+      book_p:'전화나 이메일로 연락 주시면 알맞은 객실을 안내해 드립니다 — 예약 수수료 없이 저희와 직접 소통하세요.',
+      ota_label:'다음에서도 예약 가능합니다',
+      modal_facts_h:'객실 정보', modal_fact_size:'객실 크기', modal_fact_beds:'침대',
+      modal_fact_bath:'욕실', modal_fact_bath_v:'개인 전용 욕실',
+      modal_fact_inroom:'객실 내 시설', modal_fact_inroom_v:'책상 · 미니냉장고 · 에어컨 · TV',
+      modal_enquire:'이 객실 문의하기',
+      footer_explore:'바로가기', footer_hours:'이용 시간',
+      footer_checkin:'체크인 16:00–22:00', footer_checkout:'체크아웃 11:00 이전',
+      footer_copy:'© 2026 melo stay, 서울',
+      footer_address:'서울 종로구 종로 325, 창신글라스타워 5-6층'
+    }
+  };
+
+  let currentLang = 'en';
+
+  function applyTranslations(lang){
+    const dict = I18N[lang] || I18N.en;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if(dict[key] !== undefined){
+        el.innerHTML = dict[key];
+      }
+      // If this language's dictionary has no entry for the key (used
+      // deliberately for hero_tagline / about_tagline), the element is
+      // left exactly as it is in the HTML — i.e. in English.
+    });
+  }
+
+  function setLanguage(lang){
+    if(!I18N[lang]) return;
+    currentLang = lang;
+    document.documentElement.lang = lang;
+    applyTranslations(lang);
+    document.querySelectorAll('.lang-toggle button').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.lang === lang);
+    });
+    try{ localStorage.setItem('melo_lang', lang); }catch(e){}
+    // Re-render the room modal in the new language if it's open
+    if(roomModalOverlay.classList.contains('open') && currentRoomKey){
+      openRoomModal(currentRoomKey);
+    }
+  }
+
+  document.querySelectorAll('.lang-toggle button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if(btn.disabled) return;
+      setLanguage(btn.dataset.lang);
+    });
+  });
+
+  // Restore a previously chosen language on return visits
+  (function initLanguage(){
+    let saved = null;
+    try{ saved = localStorage.getItem('melo_lang'); }catch(e){}
+    if(saved && I18N[saved]) setLanguage(saved);
+  })();
+
+  // ---------- Room detail modal ----------
+  // Each room's photo folder (see project brief naming convention) maps to a
+  // gallery of `photos` placeholder slots. Once real images exist, replace the
+  // gallery-building loop below with <img src="images/ROOMCODE N.webp"> tags.
+  const ROOMS = {
+    str: {
+      folder: 'str', photos: 7,
+      en: { name:'Standard Twin', tier:'Standard', sub:'Two beds · Private bathroom',
+        description:"Two single beds, a private ensuite bathroom, and everything you need for a simple, comfortable stay. Compact and function-first — no wasted space, nothing you don't need.",
+        description2:'Wall-mounted AC and TV, a small desk and stool, mini-fridge, and a frosted-glass bathroom door that keeps the room feeling open even at this size.',
+        size:'~10 m²', beds:'2 single beds' },
+      zh: { name:'标准双床房', tier:'标准', sub:'两张床 · 独立卫浴',
+        description:'两张单人床，独立卫浴，简单舒适住宿所需的一切。紧凑且注重实用——没有多余空间，也没有不需要的东西。',
+        description2:'壁挂式空调和电视、小书桌与凳子、迷你冰箱，以及磨砂玻璃卫浴门，即使空间紧凑也让房间显得通透。',
+        size:'约10平方米', beds:'2张单人床' },
+      ko: { name:'스탠다드 트윈', tier:'스탠다드', sub:'침대 2개 · 개인 욕실',
+        description:'싱글 침대 2개와 개인 전용 욕실을 갖춘, 단순하고 편안한 투숙에 필요한 모든 것을 담은 객실입니다. 컴팩트하고 기능 중심으로 설계되어 불필요한 공간이나 요소가 없습니다.',
+        description2:'벽걸이형 에어컨과 TV, 작은 책상과 스툴, 미니냉장고, 그리고 이 크기에서도 개방감을 주는 간유리 처리된 욕실 문.',
+        size:'약 10㎡', beds:'싱글베드 2개' }
+    },
+    suptr: {
+      folder: 'suptr', photos: 7,
+      en: { name:'Superior Twin', tier:'Superior', sub:'Two beds · Private bathroom',
+        description:'The same reliable twin layout as Standard, with extra comfort touches and a slightly more considered finish throughout.',
+        description2:'Wall-mounted AC and TV, a small desk and stool, mini-fridge, and a frosted-glass bathroom door.',
+        size:'~12 m²', beds:'2 single beds' },
+      zh: { name:'高级双床房', tier:'高级', sub:'两张床 · 独立卫浴',
+        description:'与标准房相同的可靠双床布局，增加了更多舒适细节，整体装修也更为精致。',
+        description2:'壁挂式空调和电视、小书桌与凳子、迷你冰箱，以及磨砂玻璃卫浴门。',
+        size:'约12平方米', beds:'2张单人床' },
+      ko: { name:'슈페리어 트윈', tier:'슈페리어', sub:'침대 2개 · 개인 욕실',
+        description:'스탠다드와 동일하고 안정적인 트윈 구조에 편안함을 더하고, 전반적으로 좀 더 세심하게 마감한 객실입니다.',
+        description2:'벽걸이형 에어컨과 TV, 작은 책상과 스툴, 미니냉장고, 간유리 처리된 욕실 문.',
+        size:'약 12㎡', beds:'싱글베드 2개' }
+    },
+    dctr: {
+      folder: 'dctr', photos: 11,
+      en: { name:'Deluxe Corner Twin', tier:'Deluxe', sub:'Two beds · Corner position · Private bathroom',
+        description:'Our top twin option. Set in a corner position for extra natural light, with the same calm material palette carried through in a slightly larger footprint.',
+        description2:'Wall-mounted AC and TV, a small desk and stool, mini-fridge, and a frosted-glass bathroom door.',
+        size:'~10 m²', beds:'2 single beds' },
+      zh: { name:'豪华转角双床房', tier:'豪华', sub:'两张床 · 转角位置 · 独立卫浴',
+        description:'我们最高等级的双床房型。位于转角位置，自然采光更佳，延续同样宁静的材质基调，空间也略为宽敞。',
+        description2:'壁挂式空调和电视、小书桌与凳子、迷你冰箱，以及磨砂玻璃卫浴门。',
+        size:'约10平方米', beds:'2张单人床' },
+      ko: { name:'디럭스 코너 트윈', tier:'디럭스', sub:'침대 2개 · 코너 위치 · 개인 욕실',
+        description:'저희 최상급 트윈 객실입니다. 자연광이 풍부한 코너에 위치하며, 동일한 차분한 소재감을 유지하면서 공간이 조금 더 넓습니다.',
+        description2:'벽걸이형 에어컨과 TV, 작은 책상과 스툴, 미니냉장고, 간유리 처리된 욕실 문.',
+        size:'약 10㎡', beds:'싱글베드 2개' }
+    },
+    edr: {
+      folder: 'edr', photos: 4,
+      en: { name:'ECO Double', tier:'Economy', sub:'One bed · Private bathroom',
+        description:'Our most compact room, built for travelers who just need a simple, private place to sleep between days out exploring the city.',
+        description2:'Wall-mounted AC and TV, mini-fridge, and a frosted-glass bathroom door — the essentials, done well.',
+        size:'~9 m²', beds:'1 double bed' },
+      zh: { name:'经济大床房', tier:'经济', sub:'一张床 · 独立卫浴',
+        description:'我们最紧凑的房型，专为只需要一处简单私密睡眠空间、白天在外探索城市的旅客而设。',
+        description2:'壁挂式空调和电视、迷你冰箱，以及磨砂玻璃卫浴门——把基本设施做到位。',
+        size:'约9平方米', beds:'1张大床' },
+      ko: { name:'이코노미 더블', tier:'이코노미', sub:'침대 1개 · 개인 욕실',
+        description:'하루 종일 도시를 둘러본 뒤 단순하고 프라이빗하게 쉴 곳이 필요한 여행자를 위한, 저희에서 가장 아담한 객실입니다.',
+        description2:'벽걸이형 에어컨과 TV, 미니냉장고, 그리고 간유리 처리된 욕실 문 — 꼭 필요한 것만 알차게 갖췄습니다.',
+        size:'약 9㎡', beds:'더블베드 1개' }
+    },
+    sdr: {
+      folder: 'sdr', photos: 10,
+      en: { name:'Standard Double', tier:'Standard', sub:'One bed · Private bathroom',
+        description:'One bed, a private ensuite bathroom, and a quiet, simple room for solo travellers or couples.',
+        description2:'Wall-mounted AC and TV, a small desk and stool, mini-fridge, and a frosted-glass bathroom door.',
+        size:'~12 m²', beds:'1 double bed' },
+      zh: { name:'标准大床房', tier:'标准', sub:'一张床 · 独立卫浴',
+        description:'一张大床，独立卫浴，为独行旅客或情侣提供安静简约的空间。',
+        description2:'壁挂式空调和电视、小书桌与凳子、迷你冰箱，以及磨砂玻璃卫浴门。',
+        size:'约12平方米', beds:'1张大床' },
+      ko: { name:'스탠다드 더블', tier:'스탠다드', sub:'침대 1개 · 개인 욕실',
+        description:'침대 1개와 개인 전용 욕실을 갖춘, 혼자 여행하는 분이나 커플을 위한 조용하고 심플한 객실입니다.',
+        description2:'벽걸이형 에어컨과 TV, 작은 책상과 스툴, 미니냉장고, 간유리 처리된 욕실 문.',
+        size:'약 12㎡', beds:'더블베드 1개' }
+    },
+    supdr: {
+      folder: 'supdr', photos: 8,
+      en: { name:'Superior Double', tier:'Superior', sub:'One bed · Private bathroom',
+        description:'A step up from Standard Double, same simple layout with extra comfort touches.',
+        description2:'Wall-mounted AC and TV, a small desk and stool, mini-fridge, and a frosted-glass bathroom door.',
+        size:'~12 m²', beds:'1 double bed' },
+      zh: { name:'高级大床房', tier:'高级', sub:'一张床 · 独立卫浴',
+        description:'在标准大床房基础上升级，同样简约的格局，增添更多舒适细节。',
+        description2:'壁挂式空调和电视、小书桌与凳子、迷你冰箱，以及磨砂玻璃卫浴门。',
+        size:'约12平方米', beds:'1张大床' },
+      ko: { name:'슈페리어 더블', tier:'슈페리어', sub:'침대 1개 · 개인 욕실',
+        description:'스탠다드 더블과 동일한 심플한 구조에 편안함을 더한 업그레이드 객실입니다.',
+        description2:'벽걸이형 에어컨과 TV, 작은 책상과 스툴, 미니냉장고, 간유리 처리된 욕실 문.',
+        size:'약 12㎡', beds:'더블베드 1개' }
+    },
+    ftr: {
+      folder: 'ftr', photos: 12,
+      en: { name:'Family Twin', tier:'Family', sub:'Two double beds · Private bathroom',
+        description:'Extra space for families or small groups travelling together, without losing the quiet, uncluttered feel of the smaller rooms.',
+        description2:'Wall-mounted AC and TV, desk and stool, mini-fridge, and a frosted-glass bathroom door.',
+        size:'~17 m²', beds:'2 double beds' },
+      zh: { name:'家庭双床房', tier:'家庭', sub:'两张双人床 · 独立卫浴',
+        description:'为结伴出行的家庭或小团体提供更多空间，同时保留小房型那种安静、不杂乱的感觉。',
+        description2:'壁挂式空调和电视、书桌与凳子、迷你冰箱，以及磨砂玻璃卫浴门。',
+        size:'约17平方米', beds:'2张大床' },
+      ko: { name:'패밀리 트윈', tier:'패밀리', sub:'더블베드 2개 · 개인 욕실',
+        description:'작은 객실 특유의 조용하고 정돈된 느낌은 그대로 유지하면서, 함께 여행하는 가족이나 소규모 그룹을 위한 넉넉한 공간을 제공합니다.',
+        description2:'벽걸이형 에어컨과 TV, 책상과 스툴, 미니냉장고, 간유리 처리된 욕실 문.',
+        size:'약 17㎡', beds:'더블베드 2개' }
+    },
+    dftr: {
+      folder: 'dftr', photos: 13,
+      en: { name:'Deluxe Family Twin', tier:'Deluxe', sub:'Two double beds · Private bathroom',
+        description:'Our largest room type, built for families who want extra room to spread out without leaving the calm, function-first design behind.',
+        description2:'Wall-mounted AC and TV, desk and stool, mini-fridge, and a frosted-glass bathroom door.',
+        size:'~18 m²', beds:'2 double beds' },
+      zh: { name:'豪华家庭双床房', tier:'豪华', sub:'两张双人床 · 独立卫浴',
+        description:'我们最大的房型，专为希望有更多空间的家庭而设，同时不失宁静、注重实用的设计理念。',
+        description2:'壁挂式空调和电视、书桌与凳子、迷你冰箱，以及磨砂玻璃卫浴门。',
+        size:'约18平方米', beds:'2张大床' },
+      ko: { name:'디럭스 패밀리 트윈', tier:'디럭스', sub:'더블베드 2개 · 개인 욕실',
+        description:'차분하고 기능 중심적인 디자인은 그대로 유지하면서, 더 넓은 공간을 원하는 가족을 위해 마련된 저희 최대 규모의 객실입니다.',
+        description2:'벽걸이형 에어컨과 TV, 책상과 스툴, 미니냉장고, 간유리 처리된 욕실 문.',
+        size:'약 18㎡', beds:'더블베드 2개' }
+    }
+  };
+
+  let currentPhotoIndex = 0;
+
+  // Renders the real photo into the big main gallery box (images live at
+  // images/rooms/<folder>/<n>.jpg, numbered from 1) and updates which
+  // thumbnail is highlighted + the counter.
+  function renderGalleryPhoto(r, t, index){
+    currentPhotoIndex = index;
+    const main = document.getElementById('rmGalleryMain');
+    main.classList.add('has-photo');
+    main.innerHTML = '<img src="images/rooms/' + r.folder + '/' + (index + 1) + '.jpg" alt="' + t.name + '">';
+    document.getElementById('rmGalleryCounter').textContent = (index + 1) + ' / ' + r.photos;
+    document.querySelectorAll('#rmGalleryThumbs .img-box').forEach((thumb, i) => {
+      thumb.classList.toggle('active', i === index);
+    });
+  }
+
+  function openRoomModal(key){
+    const r = ROOMS[key];
+    if(!r) return;
+    currentRoomKey = key;
+    const t = r[currentLang] || r.en;
+    const dict = I18N[currentLang] || I18N.en;
+
+    document.getElementById('rmTier').textContent = t.tier;
+    document.getElementById('rmName').textContent = t.name;
+    document.getElementById('rmSub').textContent = t.sub;
+    document.getElementById('rmDescription').textContent = t.description;
+    document.getElementById('rmDescription2').textContent = t.description2;
+    document.getElementById('rmFactSize').innerHTML = '<span>' + dict.modal_fact_size + '</span><span>' + t.size + '</span>';
+    document.getElementById('rmFactBeds').innerHTML = '<span>' + dict.modal_fact_beds + '</span><span>' + t.beds + '</span>';
+
+    const thumbs = document.getElementById('rmGalleryThumbs');
+    thumbs.innerHTML = '';
+    for(let i = 0; i < r.photos; i++){
+      const thumb = document.createElement('div');
+      thumb.className = 'img-box has-photo';
+      thumb.innerHTML = '<img src="images/rooms/' + r.folder + '/' + (i + 1) + '.jpg" alt="' + t.name + ' ' + (i + 1) + '">';
+      thumb.addEventListener('click', () => renderGalleryPhoto(r, t, i));
+      thumbs.appendChild(thumb);
+    }
+    renderGalleryPhoto(r, t, 0);
+
+    roomModalOverlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeRoomModal(){
+    roomModalOverlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.querySelectorAll('.room-card').forEach(card => {
+    card.addEventListener('click', () => openRoomModal(card.dataset.room));
+  });
+
+  document.getElementById('roomModalClose').addEventListener('click', closeRoomModal);
+  roomModalOverlay.addEventListener('click', (e) => {
+    if(e.target === roomModalOverlay) closeRoomModal();
+  });
+
+  function stepGallery(dir){
+    const r = ROOMS[currentRoomKey];
+    if(!r) return;
+    const t = r[currentLang] || r.en;
+    const next = (currentPhotoIndex + dir + r.photos) % r.photos;
+    renderGalleryPhoto(r, t, next);
+  }
+  document.getElementById('rmGalleryPrev').addEventListener('click', () => stepGallery(-1));
+  document.getElementById('rmGalleryNext').addEventListener('click', () => stepGallery(1));
+
+  document.addEventListener('keydown', (e) => {
+    if(!roomModalOverlay.classList.contains('open')) return;
+    if(e.key === 'Escape') closeRoomModal();
+    if(e.key === 'ArrowLeft') stepGallery(-1);
+    if(e.key === 'ArrowRight') stepGallery(1);
+  });
+
+  // Clicking "Enquire" inside the modal should also close it before jumping to Book
+  document.getElementById('rmCta').addEventListener('click', closeRoomModal);
+
+  // Scroll-down cue: nudge the visitor to the next section beneath the hero
+  const heroScrollCue = document.getElementById('heroScrollCue');
+  if(heroScrollCue){
+    heroScrollCue.addEventListener('click', () => {
+      const target = document.getElementById('homeIntro');
+      if(target) target.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  }
+
+  // Enquiry form: submit via fetch so the guest never leaves the page.
+  // Requires a form-backend endpoint (Formspree, FormSubmit, etc.) swapped
+  // into the form's action="" attribute — see the project notes for setup steps.
+  const enquiryForm = document.getElementById('enquiryForm');
+  if(enquiryForm){
+    enquiryForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const status = document.getElementById('enquiryStatus');
+      const btn = document.getElementById('enquirySubmit');
+      const dict = I18N[currentLang] || I18N.en;
+      btn.disabled = true;
+      status.textContent = '';
+      status.className = 'enquiry-status';
+      try {
+        const res = await fetch(enquiryForm.action, {
+          method: 'POST',
+          body: new FormData(enquiryForm),
+          headers: { 'Accept': 'application/json' }
+        });
+        const data = await res.json();
+        if(!res.ok || !data.success) throw new Error('submit failed');
+        status.textContent = dict.enquiry_success || I18N.en.enquiry_success;
+        status.classList.add('success');
+        enquiryForm.reset();
+      } catch(err){
+        status.textContent = dict.enquiry_error || I18N.en.enquiry_error;
+        status.classList.add('error');
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  }
+
+  // Reveal whatever's already in view on first load
+  observeFadeUps();
+</script>
+
+<script src="https://web3forms.com/client/script.js" async defer></script>
+
+</body>
+</html>
