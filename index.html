@@ -363,6 +363,17 @@
     display:block;margin-top:1px;font-size:13px;color:var(--ink-soft);
   }
   .room-card .price-line .price-total::before{content:none;}
+  .room-card .price-ota,
+  .room-modal-price .price-ota{
+    text-decoration:line-through;
+    text-decoration-thickness:1px;
+    color:var(--ink-soft);
+    font-size:0.78em;
+    font-weight:400;
+    margin-right:0.4em;
+    letter-spacing:0;
+    white-space:nowrap;
+  }
   .prices-footnote{
     margin:0;font-size:12px;color:var(--ink-soft);line-height:1.6;
   }
@@ -426,7 +437,9 @@
       font-size:10.5px;letter-spacing:0.03em;color:var(--oak);
     }
     .room-card .price-line{font-size:13px;line-height:1.3;}
+    .room-card .price-ota{font-size:10.5px;margin-right:0.3em;}
     .room-card .price-line .price-total{display:block;font-size:11.5px;color:var(--ink-soft);margin-top:2px;}
+    .room-card .price-line .price-total .price-ota{font-size:10px;}
     .room-card .price-line .price-total::before{content:none;}
     .room-card .price-note{font-size:10px;line-height:1.35;}
     .room-card .few-left{font-size:9px;padding:1px 6px;margin-top:5px;}
@@ -1285,9 +1298,9 @@
       fact_desk:'Desk', fact_fridge:'Mini-fridge', fact_ac:'AC', fact_tv:'TV',
       price_soon:'Pricing coming soon', price_enquire:'Enquire for rates',
       price_from:'From {price}\u00A0/\u00A0night',
-      price_night:'{price}\u00A0/\u00A0night',
-      price_avg:'{avg}\u00A0/\u00A0night avg',
-      price_total:'{total} total ({n} nights)',
+      price_night:'{ota}{price}\u00A0/\u00A0night',
+      price_avg:'{ota}{avg}\u00A0/\u00A0night avg',
+      price_total:'{ota}{total} total ({n} nights)',
       price_note:'Book direct, {pct}% below Booking.com',
       price_sold:'Sold out for these dates',
       price_enquire_dates:'Enquire for rates for these dates',
@@ -1360,9 +1373,9 @@
       fact_desk:'书桌', fact_fridge:'迷你冰箱', fact_ac:'空调', fact_tv:'电视',
       price_soon:'价格即将公布', price_enquire:'咨询房价',
       price_from:'{price} 起 / 晚',
-      price_night:'{price} / 晚',
-      price_avg:'均价 {avg} / 晚',
-      price_total:'共 {total}（{n}晚）',
+      price_night:'{ota}{price} / 晚',
+      price_avg:'{ota}均价 {avg} / 晚',
+      price_total:'共 {ota}{total}（{n}晚）',
       price_note:'直接预订，比 Booking.com 低 {pct}%',
       price_sold:'所选日期已订满',
       price_enquire_dates:'所选日期请询价',
@@ -1430,9 +1443,9 @@
       fact_desk:'책상', fact_fridge:'미니냉장고', fact_ac:'에어컨', fact_tv:'TV',
       price_soon:'가격 안내 예정', price_enquire:'요금 문의',
       price_from:'{price}부터 / 1박',
-      price_night:'{price} / 1박',
-      price_avg:'평균 {avg} / 1박',
-      price_total:'총 {total} ({n}박)',
+      price_night:'{ota}{price} / 1박',
+      price_avg:'{ota}평균 {avg} / 1박',
+      price_total:'총 {ota}{total} ({n}박)',
       price_note:'직접 예약 시 Booking.com보다 {pct}% 저렴',
       price_sold:'선택하신 날짜는 마감되었습니다',
       price_enquire_dates:'선택하신 날짜는 요금 문의',
@@ -1524,6 +1537,10 @@
 
   function formatKrw(amount){
     return '₩' + Math.round(amount).toLocaleString('en-US');
+  }
+
+  function otaMark(amount){
+    return '<s class="price-ota">' + formatKrw(amount) + '</s>';
   }
 
   function priceText(key, vars){
@@ -1691,16 +1708,19 @@
     }
 
     const directs = reads.map(r => directFromOta(r.ota));
+    const otas = reads.map(r => Number(r.ota));
     const total = directs.reduce((sum, n) => sum + n, 0);
+    const otaTotal = otas.reduce((sum, n) => sum + n, 0);
     const avg = Math.round(total / directs.length);
+    const otaAvg = Math.round(otaTotal / otas.length);
     const fewLeft = reads.some(r => r.left != null && r.left <= 2);
     setPriceState(el, 'is-set');
     let line;
     if(directs.length === 1){
-      line = '<div class="price-line">' + priceText('price_night', {price: formatKrw(directs[0])}) + '</div>';
+      line = '<div class="price-line">' + priceText('price_night', {ota: otaMark(otas[0]), price: formatKrw(directs[0])}) + '</div>';
     } else {
-      line = '<div class="price-line"><span class="price-avg">' + priceText('price_avg', {avg: formatKrw(avg)}) +
-        '</span><span class="price-total">' + priceText('price_total', {total: formatKrw(total), n: String(directs.length)}) +
+      line = '<div class="price-line"><span class="price-avg">' + priceText('price_avg', {ota: otaMark(otaAvg), avg: formatKrw(avg)}) +
+        '</span><span class="price-total">' + priceText('price_total', {ota: otaMark(otaTotal), total: formatKrw(total), n: String(directs.length)}) +
         '</span></div>';
     }
     let html = line + '<div class="price-note">' + priceText('price_note', {pct: String(pct)}) + '</div>';
