@@ -336,7 +336,65 @@
   .room-card .facts{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--ink-soft);}
   .room-card .facts span::before{content:"·";margin-right:6px;color:var(--oak);}
   .room-card .facts span:first-child::before{content:"";margin:0;}
-  .room-card .price{margin-top:12px;font-size:13px;color:var(--ink-soft);font-style:italic;}
+  .room-card .price{margin-top:12px;font-size:13px;color:var(--ink-soft);font-style:italic;font-weight:400;}
+  .room-card .price.is-set{font-style:normal;color:var(--ink);}
+  .room-card .price-line{
+    font-family:'Jost','Noto Sans SC','Noto Sans KR',sans-serif;
+    font-size:16px;font-weight:400;letter-spacing:0.01em;color:var(--ink);
+    font-variant-numeric:tabular-nums;
+  }
+  .room-card .price-note{
+    margin-top:4px;font-size:11.5px;line-height:1.45;color:var(--sage);font-style:normal;
+  }
+  .room-card .few-left{
+    display:inline-block;margin-top:7px;font-size:10px;letter-spacing:0.04em;
+    color:var(--sage);background:var(--sage-soft);padding:2px 8px;border-radius:2px;
+  }
+  .room-card .price.is-sold,
+  .room-card .price.is-enquire{
+    font-style:normal;color:var(--ink-soft);
+  }
+  .price-enquire-link{
+    color:var(--ink);border-bottom:1px solid currentColor;font-style:normal;
+  }
+  .price-enquire-link:hover{color:var(--oak);border-bottom-color:var(--oak);}
+  .room-card .price-line .price-avg{display:block;}
+  .room-card .price-line .price-total{
+    display:block;margin-top:1px;font-size:13px;color:var(--ink-soft);
+  }
+  .room-card .price-line .price-total::before{content:none;}
+  .prices-footnote{
+    margin:0;font-size:12px;color:var(--ink-soft);line-height:1.6;
+  }
+  .room-group:has(+ .prices-footnote){margin-bottom:28px;}
+
+  .date-bar{
+    display:flex;align-items:flex-end;flex-wrap:wrap;gap:14px 18px;
+    margin:0 0 48px;padding:16px 20px;
+    background:#fff;border:1px solid var(--stone-deep);border-radius:4px;
+  }
+  .section-head + .date-bar{margin-top:-16px;}
+  .date-field{display:flex;flex-direction:column;gap:6px;min-width:156px;}
+  .date-field span{
+    font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-soft);
+  }
+  .date-field input[type="date"]{
+    font-family:inherit;font-size:15px;color:var(--ink);
+    background:var(--stone-light);border:1px solid var(--stone-deep);
+    border-radius:2px;padding:9px 12px;min-height:42px;
+  }
+  .date-field input[type="date"]:focus{outline:none;border-color:var(--oak);}
+  .date-field input[type="date"]::-webkit-calendar-picker-indicator{opacity:0.55;cursor:pointer;}
+  .date-sep{color:var(--oak);padding-bottom:11px;font-size:14px;}
+  .date-nights{font-size:13px;color:var(--ink-soft);padding-bottom:11px;}
+  .date-clear{
+    margin-left:auto;background:none;border:none;padding:0 0 11px;
+    font-size:12px;color:var(--ink-soft);cursor:pointer;
+    border-bottom:1px solid transparent;
+  }
+  .date-clear:hover{color:var(--ink);border-bottom-color:var(--ink);}
+  .date-clear[hidden]{display:none;}
+
   .room-card{cursor:pointer;transition:transform .15s;}
   .room-card:hover{transform:translateY(-3px);}
   .room-card:hover .img-box{border-color:rgba(176,141,100,0.5);box-shadow:0 16px 36px rgba(176,141,100,0.16);}
@@ -361,9 +419,27 @@
     .room-card p{display:none;}
     .room-card .facts{display:none;}
     .room-card .price{
-      font-style:normal;font-size:10.5px;letter-spacing:0.03em;text-transform:uppercase;
-      color:var(--oak);margin:0 12px;
+      font-style:normal;font-size:13px;letter-spacing:0;text-transform:none;
+      color:var(--ink);margin:4px 12px 0;font-weight:400;
     }
+    .room-card .price.is-soon{
+      font-size:10.5px;letter-spacing:0.03em;color:var(--oak);
+    }
+    .room-card .price-line{font-size:13px;line-height:1.3;}
+    .room-card .price-line .price-total{display:block;font-size:11.5px;color:var(--ink-soft);margin-top:2px;}
+    .room-card .price-line .price-total::before{content:none;}
+    .room-card .price-note{font-size:10px;line-height:1.35;}
+    .room-card .few-left{font-size:9px;padding:1px 6px;margin-top:5px;}
+    .room-card .price.is-sold,
+    .room-card .price.is-enquire{font-size:11px;letter-spacing:0;color:var(--ink-soft);}
+    .prices-footnote{font-size:11px;}
+    .date-bar{padding:14px;gap:10px 12px;margin-bottom:32px;}
+    .section-head + .date-bar{margin-top:-8px;}
+    .date-field{flex:1 1 calc(50% - 20px);min-width:0;}
+    .date-sep{display:none;}
+    .date-nights{padding-bottom:0;width:auto;flex:1;}
+    .date-clear{margin-left:auto;padding-bottom:0;}
+
     .room-card .view-more{
       margin:8px 12px 0;display:inline-block;padding:0;
       border:none;font-size:11.5px;
@@ -433,6 +509,21 @@
   }
   .room-modal-facts li span:first-child{color:var(--ink-soft);}
   .room-modal-price{margin-top:20px;font-size:13px;color:var(--ink-soft);font-style:italic;}
+  .room-modal-price.is-set{font-style:normal;color:var(--ink);}
+  .room-modal-price .price-line{
+    font-family:'Jost','Noto Sans SC','Noto Sans KR',sans-serif;
+    font-size:18px;font-weight:400;letter-spacing:0.01em;color:var(--ink);
+    font-variant-numeric:tabular-nums;
+  }
+  .room-modal-price .price-note{margin-top:6px;font-size:12px;line-height:1.5;color:var(--sage);}
+  .room-modal-price .few-left{
+    display:inline-block;margin-top:8px;font-size:11px;letter-spacing:0.04em;
+    color:var(--sage);background:var(--sage-soft);padding:3px 9px;border-radius:2px;
+  }
+  .room-modal-price.is-sold,
+  .room-modal-price.is-enquire{font-style:normal;color:var(--ink-soft);}
+  .room-modal-price .price-total::before{content:" · ";}
+
   .room-modal-cta{
     margin-top:18px;display:inline-block;background:var(--ink);color:var(--stone-light);
     padding:12px 26px;border-radius:2px;font-size:13px;letter-spacing:0.03em;cursor:pointer;
@@ -720,6 +811,20 @@
         <p data-i18n="rooms_p">Eight room types across 24 rooms — grouped by bed configuration.</p>
       </div>
 
+      <form class="date-bar fade-up" id="dateBar" autocomplete="off">
+        <label class="date-field">
+          <span data-i18n="dates_checkin">Check-in</span>
+          <input type="date" id="checkinInput" name="checkin">
+        </label>
+        <span class="date-sep" aria-hidden="true">→</span>
+        <label class="date-field">
+          <span data-i18n="dates_checkout">Check-out</span>
+          <input type="date" id="checkoutInput" name="checkout">
+        </label>
+        <span class="date-nights" id="dateNights"></span>
+        <button type="button" class="date-clear" id="dateClear" hidden data-i18n="dates_clear">Clear dates</button>
+      </form>
+
       <div class="room-group fade-up">
         <div class="room-group-head">
           <h3 data-i18n="group_twin_h">Twin rooms</h3>
@@ -732,7 +837,7 @@
             <h4 data-i18n="room_str_name">Standard Twin</h4>
             <p data-i18n="room_str_card">Two beds, private bathroom, everything you need for a simple stay.</p>
             <div class="facts"><span data-i18n="fact_desk">Desk</span><span data-i18n="fact_fridge">Mini-fridge</span><span data-i18n="fact_ac">AC</span><span data-i18n="fact_tv">TV</span></div>
-            <div class="price" data-i18n="price_soon">Pricing coming soon</div>
+            <div class="price is-soon">Pricing coming soon</div>
             <div class="view-more" data-i18n="view_more">View details →</div>
           </div>
           <div class="room-card" data-room="suptr">
@@ -741,7 +846,7 @@
             <h4 data-i18n="room_suptr_name">Superior Twin</h4>
             <p data-i18n="room_suptr_card">A step up from Standard, same layout with extra comfort touches.</p>
             <div class="facts"><span data-i18n="fact_desk">Desk</span><span data-i18n="fact_fridge">Mini-fridge</span><span data-i18n="fact_ac">AC</span><span data-i18n="fact_tv">TV</span></div>
-            <div class="price" data-i18n="price_soon">Pricing coming soon</div>
+            <div class="price is-soon">Pricing coming soon</div>
             <div class="view-more" data-i18n="view_more">View details →</div>
           </div>
           <div class="room-card" data-room="dctr">
@@ -750,7 +855,7 @@
             <h4 data-i18n="room_dctr_name">Deluxe Corner Twin</h4>
             <p data-i18n="room_dctr_card">Our top twin option, set in a corner position for extra light.</p>
             <div class="facts"><span data-i18n="fact_desk">Desk</span><span data-i18n="fact_fridge">Mini-fridge</span><span data-i18n="fact_ac">AC</span><span data-i18n="fact_tv">TV</span></div>
-            <div class="price" data-i18n="price_soon">Pricing coming soon</div>
+            <div class="price is-soon">Pricing coming soon</div>
             <div class="view-more" data-i18n="view_more">View details →</div>
           </div>
         </div>
@@ -768,7 +873,7 @@
             <h4 data-i18n="room_edr_name">ECO Double</h4>
             <p data-i18n="room_edr_card">Our most compact option, for travelers who just need a simple place to sleep.</p>
             <div class="facts"><span data-i18n="fact_desk">Desk</span><span data-i18n="fact_fridge">Mini-fridge</span><span data-i18n="fact_ac">AC</span><span data-i18n="fact_tv">TV</span></div>
-            <div class="price" data-i18n="price_soon">Pricing coming soon</div>
+            <div class="price is-soon">Enquire for rates</div>
             <div class="view-more" data-i18n="view_more">View details →</div>
           </div>
           <div class="room-card" data-room="sdr">
@@ -777,7 +882,7 @@
             <h4 data-i18n="room_sdr_name">Standard Double</h4>
             <p data-i18n="room_sdr_card">One bed, private bathroom, quiet and simple.</p>
             <div class="facts"><span data-i18n="fact_desk">Desk</span><span data-i18n="fact_fridge">Mini-fridge</span><span data-i18n="fact_ac">AC</span><span data-i18n="fact_tv">TV</span></div>
-            <div class="price" data-i18n="price_soon">Pricing coming soon</div>
+            <div class="price is-soon">Pricing coming soon</div>
             <div class="view-more" data-i18n="view_more">View details →</div>
           </div>
           <div class="room-card" data-room="supdr">
@@ -786,7 +891,7 @@
             <h4 data-i18n="room_supdr_name">Superior Double</h4>
             <p data-i18n="room_supdr_card">A step up from Standard, same layout with extra comfort touches.</p>
             <div class="facts"><span data-i18n="fact_desk">Desk</span><span data-i18n="fact_fridge">Mini-fridge</span><span data-i18n="fact_ac">AC</span><span data-i18n="fact_tv">TV</span></div>
-            <div class="price" data-i18n="price_soon">Pricing coming soon</div>
+            <div class="price is-soon">Pricing coming soon</div>
             <div class="view-more" data-i18n="view_more">View details →</div>
           </div>
         </div>
@@ -804,7 +909,7 @@
             <h4 data-i18n="room_ftr_name">Family Twin</h4>
             <p data-i18n="room_ftr_card">Extra space for families or small groups traveling together.</p>
             <div class="facts"><span data-i18n="fact_desk">Desk</span><span data-i18n="fact_fridge">Mini-fridge</span><span data-i18n="fact_ac">AC</span><span data-i18n="fact_tv">TV</span></div>
-            <div class="price" data-i18n="price_soon">Pricing coming soon</div>
+            <div class="price is-soon">Pricing coming soon</div>
             <div class="view-more" data-i18n="view_more">View details →</div>
           </div>
           <div class="room-card" data-room="dftr">
@@ -813,11 +918,13 @@
             <h4 data-i18n="room_dftr_name">Deluxe Family Twin</h4>
             <p data-i18n="room_dftr_card">Our largest room type, built for families who want extra room to spread out.</p>
             <div class="facts"><span data-i18n="fact_desk">Desk</span><span data-i18n="fact_fridge">Mini-fridge</span><span data-i18n="fact_ac">AC</span><span data-i18n="fact_tv">TV</span></div>
-            <div class="price" data-i18n="price_soon">Pricing coming soon</div>
+            <div class="price is-soon">Pricing coming soon</div>
             <div class="view-more" data-i18n="view_more">View details →</div>
           </div>
         </div>
       </div>
+
+      <p class="prices-footnote" data-i18n="prices_footnote">Prices updated daily · 2 guests · subject to availability</p>
 
     </div>
   </section>
@@ -958,7 +1065,7 @@
           <li id="rmFactBath"><span data-i18n="modal_fact_bath">Bathroom</span><span data-i18n="modal_fact_bath_v">Private, ensuite</span></li>
           <li id="rmFactAmenities"><span data-i18n="modal_fact_inroom">In-room</span><span data-i18n="modal_fact_inroom_v">Desk · Mini-fridge · AC · TV</span></li>
         </ul>
-        <div class="room-modal-price" id="rmPrice" data-i18n="price_soon">Pricing coming soon</div>
+        <div class="room-modal-price is-soon" id="rmPrice">Pricing coming soon</div>
         <a class="room-modal-cta" data-page="book" id="rmCta" data-i18n="modal_enquire">Enquire about this room</a>
       </div>
     </div>
@@ -1100,6 +1207,7 @@
     navLinks.forEach(l => l.classList.toggle('active', l.dataset.page === id));
     document.getElementById('mobileMenu').classList.remove('open');
     observeFadeUps();
+    if(id === 'book') prefillEnquiry();
   }
 
   // ---------- Scroll reveal ----------
@@ -1175,7 +1283,22 @@
       group_family_h:'Family rooms', group_family_s:'Best for groups',
       tier_standard:'Standard', tier_superior:'Superior', tier_deluxe:'Deluxe', tier_economy:'Economy', tier_family:'Family',
       fact_desk:'Desk', fact_fridge:'Mini-fridge', fact_ac:'AC', fact_tv:'TV',
-      price_soon:'Pricing coming soon', view_more:'View details →',
+      price_soon:'Pricing coming soon', price_enquire:'Enquire for rates',
+      price_from:'From {price}\u00A0/\u00A0night',
+      price_night:'{price}\u00A0/\u00A0night',
+      price_avg:'{avg}\u00A0/\u00A0night avg',
+      price_total:'{total} total ({n} nights)',
+      price_note:'Book direct, {pct}% below Booking.com',
+      price_sold:'Sold out for these dates',
+      price_enquire_dates:'Enquire for rates for these dates',
+      few_left:'Few rooms left',
+      prices_footnote:'Prices updated daily · 2 guests · subject to availability',
+      dates_checkin:'Check-in', dates_checkout:'Check-out',
+      dates_nights:'{n} nights', dates_1_night:'1 night', dates_clear:'Clear dates',
+      enquiry_prefill:'I would like to enquire about the {room}, check-in {checkin}, check-out {checkout} ({nights}).',
+      enquiry_prefill_dates:'I would like to enquire about a stay, check-in {checkin}, check-out {checkout} ({nights}).',
+      enquiry_prefill_room:'I would like to enquire about the {room}.',
+      view_more:'View details →',
       room_str_name:'Standard Twin', room_str_card:'Two beds, private bathroom, everything you need for a simple stay.',
       room_suptr_name:'Superior Twin', room_suptr_card:'A step up from Standard, same layout with extra comfort touches.',
       room_dctr_name:'Deluxe Corner Twin', room_dctr_card:'Our top twin option, set in a corner position for extra light.',
@@ -1235,7 +1358,22 @@
       group_family_h:'家庭房', group_family_s:'适合多人出行',
       tier_standard:'标准', tier_superior:'高级', tier_deluxe:'豪华', tier_economy:'经济', tier_family:'家庭',
       fact_desk:'书桌', fact_fridge:'迷你冰箱', fact_ac:'空调', fact_tv:'电视',
-      price_soon:'价格即将公布', view_more:'查看详情 →',
+      price_soon:'价格即将公布', price_enquire:'咨询房价',
+      price_from:'{price} 起 / 晚',
+      price_night:'{price} / 晚',
+      price_avg:'均价 {avg} / 晚',
+      price_total:'共 {total}（{n}晚）',
+      price_note:'直接预订，比 Booking.com 低 {pct}%',
+      price_sold:'所选日期已订满',
+      price_enquire_dates:'所选日期请询价',
+      few_left:'余房不多',
+      prices_footnote:'价格每日更新 · 2位客人 · 视房态而定',
+      dates_checkin:'入住', dates_checkout:'退房',
+      dates_nights:'{n}晚', dates_1_night:'1晚', dates_clear:'清除日期',
+      enquiry_prefill:'想咨询{room}，入住 {checkin}，退房 {checkout}（{nights}）。',
+      enquiry_prefill_dates:'想咨询入住事宜，入住 {checkin}，退房 {checkout}（{nights}）。',
+      enquiry_prefill_room:'想咨询{room}。',
+      view_more:'查看详情 →',
       room_str_name:'标准双床房', room_str_card:'两张床，独立卫浴，简单舒适的住宿之选。',
       room_suptr_name:'高级双床房', room_suptr_card:'在标准房基础上升级，格局相同，细节更舒适。',
       room_dctr_name:'豪华转角双床房', room_dctr_card:'我们最高等级的双床房型，位于转角位置，采光更佳。',
@@ -1290,7 +1428,22 @@
       group_family_h:'패밀리룸', group_family_s:'단체 여행에 적합',
       tier_standard:'스탠다드', tier_superior:'슈페리어', tier_deluxe:'디럭스', tier_economy:'이코노미', tier_family:'패밀리',
       fact_desk:'책상', fact_fridge:'미니냉장고', fact_ac:'에어컨', fact_tv:'TV',
-      price_soon:'가격 안내 예정', view_more:'자세히 보기 →',
+      price_soon:'가격 안내 예정', price_enquire:'요금 문의',
+      price_from:'{price}부터 / 1박',
+      price_night:'{price} / 1박',
+      price_avg:'평균 {avg} / 1박',
+      price_total:'총 {total} ({n}박)',
+      price_note:'직접 예약 시 Booking.com보다 {pct}% 저렴',
+      price_sold:'선택하신 날짜는 마감되었습니다',
+      price_enquire_dates:'선택하신 날짜는 요금 문의',
+      few_left:'잔여 객실 소수',
+      prices_footnote:'요금 매일 업데이트 · 2인 기준 · 예약 상황에 따라 변동',
+      dates_checkin:'체크인', dates_checkout:'체크아웃',
+      dates_nights:'{n}박', dates_1_night:'1박', dates_clear:'날짜 지우기',
+      enquiry_prefill:'{room} 문의드립니다. 체크인 {checkin}, 체크아웃 {checkout} ({nights}).',
+      enquiry_prefill_dates:'숙박 문의드립니다. 체크인 {checkin}, 체크아웃 {checkout} ({nights}).',
+      enquiry_prefill_room:'{room} 문의드립니다.',
+      view_more:'자세히 보기 →',
       room_str_name:'스탠다드 트윈', room_str_card:'침대 2개, 개인 욕실, 단순하고 편안한 투숙에 필요한 모든 것.',
       room_suptr_name:'슈페리어 트윈', room_suptr_card:'스탠다드와 동일한 구조에 편안함을 더한 업그레이드 객실.',
       room_dctr_name:'디럭스 코너 트윈', room_dctr_card:'코너에 위치해 채광이 좋은 저희 최상급 트윈룸.',
@@ -1339,6 +1492,9 @@
     currentLang = lang;
     document.documentElement.lang = lang;
     applyTranslations(lang);
+    renderDateBar();
+    renderAllPrices();
+    prefillEnquiry(true);
     document.querySelectorAll('.lang-toggle button').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.lang === lang);
     });
@@ -1356,12 +1512,367 @@
     });
   });
 
-  // Restore a previously chosen language on return visits
-  (function initLanguage(){
-    let saved = null;
-    try{ saved = localStorage.getItem('melo_lang'); }catch(e){}
-    if(saved && I18N[saved]) setLanguage(saved);
-  })();
+  // ---------- Room prices (loaded from prices.json) ----------
+  const ROOM_NAME_BY_KEY = {
+    str:'Standard Twin', suptr:'Superior Twin', dctr:'Deluxe Corner Twin',
+    edr:'ECO Double', sdr:'Standard Double', supdr:'Superior Double',
+    ftr:'Family Twin', dftr:'Deluxe Family Twin'
+  };
+
+  let roomPrices = null;
+  let enquireRoomKey = null;
+
+  function formatKrw(amount){
+    return '₩' + Math.round(amount).toLocaleString('en-US');
+  }
+
+  function priceText(key, vars){
+    const dict = I18N[currentLang] || I18N.en;
+    let value = dict[key];
+    if(value === undefined) value = I18N.en[key] || '';
+    if(vars){
+      Object.keys(vars).forEach(k => {
+        value = value.split('{' + k + '}').join(vars[k]);
+      });
+    }
+    return value;
+  }
+
+  function pad2(n){ return String(n).padStart(2, '0'); }
+
+  function toISODate(d){
+    return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
+  }
+
+  function parseISODate(s){
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || '');
+    if(!m) return null;
+    const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    if(d.getFullYear() !== Number(m[1]) || d.getMonth() !== Number(m[2]) - 1 || d.getDate() !== Number(m[3])) return null;
+    return d;
+  }
+
+  function addDays(d, n){
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+  }
+
+  function todayISO(){
+    return toISODate(new Date());
+  }
+
+  function formatDisplayDate(iso){
+    const d = parseISODate(iso);
+    if(!d) return iso || '';
+    const y = d.getFullYear(), m = d.getMonth() + 1, day = d.getDate();
+    if(currentLang === 'zh') return y + '年' + m + '月' + day + '日';
+    if(currentLang === 'ko') return y + '년 ' + m + '월 ' + day + '일';
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return day + ' ' + months[d.getMonth()] + ' ' + y;
+  }
+
+  function enumerateNights(checkin, checkout){
+    const start = parseISODate(checkin);
+    const end = parseISODate(checkout);
+    if(!start || !end || end <= start) return [];
+    const nights = [];
+    for(let d = start; d < end; d = addDays(d, 1)) nights.push(toISODate(d));
+    return nights;
+  }
+
+  function getStayNights(){
+    const checkinEl = document.getElementById('checkinInput');
+    const checkoutEl = document.getElementById('checkoutInput');
+    if(!checkinEl || !checkoutEl) return [];
+    return enumerateNights(checkinEl.value, checkoutEl.value);
+  }
+
+  function discountPct(){
+    const pct = roomPrices && roomPrices.discount_pct;
+    return pct != null ? Number(pct) : 10;
+  }
+
+  function directFromOta(ota){
+    return Math.floor((Number(ota) * (1 - discountPct() / 100)) / 1000) * 1000;
+  }
+
+  function roomNight(date, roomName){
+    if(!roomPrices || !roomPrices.nights) return { missing: true };
+    if(!Object.prototype.hasOwnProperty.call(roomPrices.nights, date)) return { missing: true };
+    const rec = roomPrices.nights[date][roomName];
+    if(rec == null || rec.ota_krw == null) return { soldOut: true };
+    return { ota: rec.ota_krw, left: rec.left };
+  }
+
+  function isEnquireOnly(roomName){
+    const rec = roomPrices && roomPrices.rooms && roomPrices.rooms[roomName];
+    return !!(rec && rec.enquire_only);
+  }
+
+  function dataNightDates(){
+    if(!roomPrices || !roomPrices.nights) return [];
+    return Object.keys(roomPrices.nights).sort();
+  }
+
+  function defaultCheckinISO(){
+    const today = todayISO();
+    const dates = dataNightDates();
+    if(!dates.length) return today;
+    if(dates.indexOf(today) !== -1) return today;
+    const upcoming = dates.find(d => d >= today);
+    return upcoming || dates[dates.length - 1];
+  }
+
+  function applyDefaultStay(){
+    const checkin = defaultCheckinISO();
+    const start = parseISODate(checkin);
+    if(!start) return;
+    setStayDates(checkin, toISODate(addDays(start, 1)), { silentPrefill: true });
+    prefillEnquiry(true);
+  }
+
+  function lowestDirectPrice(roomName){
+    if(!roomPrices || !roomPrices.nights) return null;
+    let low = null;
+    Object.keys(roomPrices.nights).forEach(date => {
+      const rec = roomNight(date, roomName);
+      if(rec.ota == null) return;
+      const direct = directFromOta(rec.ota);
+      if(low == null || direct < low) low = direct;
+    });
+    return low;
+  }
+
+  function setPriceState(el, state){
+    el.classList.remove('is-set', 'is-soon', 'is-sold', 'is-enquire');
+    if(state) el.classList.add(state);
+  }
+
+  function renderPriceInto(el, roomKey){
+    if(!el) return;
+    const roomName = ROOM_NAME_BY_KEY[roomKey] || roomKey;
+    if(!roomPrices || !roomPrices.nights){
+      setPriceState(el, 'is-soon');
+      el.textContent = priceText('price_soon');
+      return;
+    }
+
+    if(isEnquireOnly(roomName)){
+      setPriceState(el, 'is-enquire');
+      el.innerHTML = '<a class="price-enquire-link" href="#book" data-page="book" data-enquire-room="' + roomKey + '">' + priceText('price_enquire') + '</a>';
+      return;
+    }
+
+    const nights = getStayNights();
+    const pct = discountPct();
+
+    if(!nights.length){
+      const from = lowestDirectPrice(roomName);
+      if(from == null){
+        setPriceState(el, 'is-enquire');
+        el.innerHTML = '<a class="price-enquire-link" href="#book" data-page="book" data-enquire-room="' + roomKey + '">' + priceText('price_enquire') + '</a>';
+        return;
+      }
+      setPriceState(el, 'is-set');
+      el.innerHTML = '<div class="price-line">' + priceText('price_from', {price: formatKrw(from)}) + '</div>' +
+        '<div class="price-note">' + priceText('price_note', {pct: String(pct)}) + '</div>';
+      return;
+    }
+
+    const reads = nights.map(date => roomNight(date, roomName));
+    if(reads.some(r => r.missing)){
+      setPriceState(el, 'is-enquire');
+      el.innerHTML = '<a class="price-enquire-link" href="#book" data-page="book" data-enquire-room="' + roomKey + '">' + priceText('price_enquire_dates') + '</a>';
+      return;
+    }
+    if(reads.some(r => r.soldOut)){
+      setPriceState(el, 'is-sold');
+      el.textContent = priceText('price_sold');
+      return;
+    }
+
+    const directs = reads.map(r => directFromOta(r.ota));
+    const total = directs.reduce((sum, n) => sum + n, 0);
+    const avg = Math.round(total / directs.length);
+    const fewLeft = reads.some(r => r.left != null && r.left <= 2);
+    setPriceState(el, 'is-set');
+    let line;
+    if(directs.length === 1){
+      line = '<div class="price-line">' + priceText('price_night', {price: formatKrw(directs[0])}) + '</div>';
+    } else {
+      line = '<div class="price-line"><span class="price-avg">' + priceText('price_avg', {avg: formatKrw(avg)}) +
+        '</span><span class="price-total">' + priceText('price_total', {total: formatKrw(total), n: String(directs.length)}) +
+        '</span></div>';
+    }
+    let html = line + '<div class="price-note">' + priceText('price_note', {pct: String(pct)}) + '</div>';
+    if(fewLeft) html += '<span class="few-left">' + priceText('few_left') + '</span>';
+    el.innerHTML = html;
+  }
+
+  function renderAllPrices(){
+    document.querySelectorAll('.room-card[data-room]').forEach(card => {
+      renderPriceInto(card.querySelector('.price'), card.dataset.room);
+    });
+    if(currentRoomKey){
+      renderPriceInto(document.getElementById('rmPrice'), currentRoomKey);
+    }
+  }
+
+  function nightsLabel(n){
+    if(n === 1) return priceText('dates_1_night');
+    if(n > 1) return priceText('dates_nights', {n: String(n)});
+    return '';
+  }
+
+  function renderDateBar(){
+    const nightsEl = document.getElementById('dateNights');
+    const clearBtn = document.getElementById('dateClear');
+    const checkinEl = document.getElementById('checkinInput');
+    const checkoutEl = document.getElementById('checkoutInput');
+    if(!nightsEl || !checkinEl) return;
+    const nights = getStayNights();
+    nightsEl.textContent = nightsLabel(nights.length);
+    if(clearBtn) clearBtn.hidden = !(checkinEl.value || checkoutEl.value);
+    const today = todayISO();
+    checkinEl.min = today;
+    if(checkinEl.value){
+      const next = addDays(parseISODate(checkinEl.value), 1);
+      checkoutEl.min = toISODate(next);
+    } else {
+      checkoutEl.min = toISODate(addDays(parseISODate(today), 1));
+    }
+  }
+
+  function setStayDates(checkin, checkout, options){
+    const checkinEl = document.getElementById('checkinInput');
+    const checkoutEl = document.getElementById('checkoutInput');
+    if(!checkinEl || !checkoutEl) return;
+    checkinEl.value = checkin || '';
+    checkoutEl.value = checkout || '';
+    if(checkinEl.value && checkoutEl.value){
+      const start = parseISODate(checkinEl.value);
+      const end = parseISODate(checkoutEl.value);
+      if(start && end && end <= start){
+        checkoutEl.value = toISODate(addDays(start, 1));
+      }
+    }
+    renderDateBar();
+    renderAllPrices();
+    if(!(options && options.silentPrefill)) prefillEnquiry(true);
+  }
+
+  function initDateBar(){
+    const checkinEl = document.getElementById('checkinInput');
+    const checkoutEl = document.getElementById('checkoutInput');
+    const clearBtn = document.getElementById('dateClear');
+    const form = document.getElementById('dateBar');
+    if(!checkinEl || !checkoutEl) return;
+
+    if(roomPrices) applyDefaultStay();
+    else renderDateBar();
+
+    const onChange = () => {
+      if(checkinEl.value){
+        const start = parseISODate(checkinEl.value);
+        const end = parseISODate(checkoutEl.value);
+        if(!end || (start && end <= start)){
+          checkoutEl.value = toISODate(addDays(start, 1));
+        }
+      }
+      renderDateBar();
+      renderAllPrices();
+      prefillEnquiry(true);
+    };
+    checkinEl.addEventListener('change', onChange);
+    checkoutEl.addEventListener('change', onChange);
+    if(form){
+      form.addEventListener('submit', (e) => e.preventDefault());
+    }
+    if(clearBtn){
+      clearBtn.addEventListener('click', () => setStayDates('', ''));
+    }
+  }
+
+  function formattedNightsPhrase(){
+    const n = getStayNights().length;
+    return nightsLabel(n);
+  }
+
+  function buildEnquiryMessage(roomKey){
+    const checkinEl = document.getElementById('checkinInput');
+    const checkoutEl = document.getElementById('checkoutInput');
+    const checkin = checkinEl && checkinEl.value;
+    const checkout = checkoutEl && checkoutEl.value;
+    const nights = enumerateNights(checkin, checkout);
+    const key = roomKey || enquireRoomKey;
+    const roomName = key && ROOMS[key] ? ((ROOMS[key][currentLang] || ROOMS[key].en).name) : (key ? (ROOM_NAME_BY_KEY[key] || key) : '');
+    if(nights.length && roomName){
+      return priceText('enquiry_prefill', {
+        room: roomName,
+        checkin: formatDisplayDate(checkin),
+        checkout: formatDisplayDate(checkout),
+        nights: nightsLabel(nights.length)
+      });
+    }
+    if(nights.length){
+      return priceText('enquiry_prefill_dates', {
+        checkin: formatDisplayDate(checkin),
+        checkout: formatDisplayDate(checkout),
+        nights: nightsLabel(nights.length)
+      });
+    }
+    if(roomName){
+      return priceText('enquiry_prefill_room', {room: roomName});
+    }
+    return '';
+  }
+
+  function prefillEnquiry(onlyIfUntouched){
+    const ta = document.querySelector('#enquiryForm textarea[name="message"]');
+    if(!ta) return;
+    const msg = buildEnquiryMessage();
+    const auto = ta.dataset.prefill === '1' || !ta.value.trim();
+    if(onlyIfUntouched && !auto) return;
+    if(!msg){
+      if(ta.dataset.prefill === '1'){
+        ta.value = '';
+        delete ta.dataset.prefill;
+      }
+      return;
+    }
+    ta.value = msg;
+    ta.dataset.prefill = '1';
+  }
+
+  async function loadPrices(){
+    try{
+      const res = await fetch('prices.json', {cache: 'no-store'});
+      if(!res.ok) throw new Error('prices.json ' + res.status);
+      roomPrices = await res.json();
+    }catch(err){
+      roomPrices = null;
+    }
+    applyDefaultStay();
+    renderDateBar();
+    renderAllPrices();
+  }
+
+  document.addEventListener('click', (e) => {
+    const enquireLink = e.target.closest('[data-enquire-room]');
+    if(enquireLink){
+      e.preventDefault();
+      e.stopPropagation();
+      enquireRoomKey = enquireLink.getAttribute('data-enquire-room');
+      prefillEnquiry();
+      showPage('book');
+      return;
+    }
+    const bookLink = e.target.closest('[data-page="book"]');
+    if(bookLink){
+      if(bookLink.id === 'rmCta' && currentRoomKey) enquireRoomKey = currentRoomKey;
+      else if(!bookLink.hasAttribute('data-enquire-room')) enquireRoomKey = null;
+    }
+  }, true);
+
 
   // ---------- Room detail modal ----------
   // Each room's photo folder (see project brief naming convention) maps to a
@@ -1531,6 +2042,7 @@
       thumbs.appendChild(thumb);
     }
     renderGalleryPhoto(r, t, 0);
+    renderPriceInto(document.getElementById('rmPrice'), key);
 
     roomModalOverlay.classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -1614,6 +2126,23 @@
 
   // Reveal whatever's already in view on first load
   observeFadeUps();
+  initDateBar();
+  loadPrices();
+
+  // Applied after date/price helpers exist so a saved language cannot
+  // trip a temporal-dead-zone error on roomPrices / ROOMS.
+  (function initLanguage(){
+    let saved = null;
+    try{ saved = localStorage.getItem('melo_lang'); }catch(e){}
+    if(saved && I18N[saved]) setLanguage(saved);
+  })();
+
+  const enquiryMessage = document.querySelector('#enquiryForm textarea[name="message"]');
+  if(enquiryMessage){
+    enquiryMessage.addEventListener('input', () => {
+      if(enquiryMessage.dataset.prefill === '1') delete enquiryMessage.dataset.prefill;
+    });
+  }
 </script>
 
 <script src="https://web3forms.com/client/script.js" async defer></script>
