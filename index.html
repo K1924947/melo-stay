@@ -2228,6 +2228,7 @@
     return '₩' + Math.round(amount).toLocaleString('en-US');
   }
   function otaMark(amount){
+    if(!discountPct()) return '';
     return '<s class="price-ota">' + formatKrw(amount) + '</s>';
   }
   function priceText(key, vars){
