@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-22",
+  "updated": "2026-11-23",
   "discount_pct": 0,
   "source": "Booking.com",
   "rooms": {
@@ -10,22 +10,22 @@
   "nights": {
     "2026-11-23": {
       "Standard Twin": {
-        "ota_krw": 68961,
+        "ota_krw": 61171,
         "left": null
       },
       "Superior Twin": {
-        "ota_krw": 80453,
+        "ota_krw": 62280,
         "left": 1
       },
       "Deluxe Corner Twin": {
-        "ota_krw": 90369,
+        "ota_krw": 80166,
         "left": 1
       },
       "ECO Double": null,
       "Standard Double": null,
       "Superior Double": null,
       "Family Twin": {
-        "ota_krw": 150615,
+        "ota_krw": 76003,
         "left": 1
       },
       "Deluxe Family Twin": {
@@ -35,22 +35,22 @@
     },
     "2026-11-24": {
       "Standard Twin": {
-        "ota_krw": 68961,
+        "ota_krw": 61171,
         "left": null
       },
       "Superior Twin": null,
       "Deluxe Corner Twin": null,
       "ECO Double": null,
       "Standard Double": {
-        "ota_krw": 68961,
+        "ota_krw": 61171,
         "left": 1
       },
       "Superior Double": {
-        "ota_krw": 80453,
+        "ota_krw": 62280,
         "left": 1
       },
       "Family Twin": {
-        "ota_krw": 150615,
+        "ota_krw": 76003,
         "left": 1
       },
       "Deluxe Family Twin": {
@@ -60,22 +60,22 @@
     },
     "2026-11-25": {
       "Standard Twin": {
-        "ota_krw": 68961,
+        "ota_krw": 61171,
         "left": null
       },
       "Superior Twin": null,
       "Deluxe Corner Twin": null,
       "ECO Double": null,
       "Standard Double": {
-        "ota_krw": 68961,
+        "ota_krw": 61171,
         "left": 1
       },
       "Superior Double": {
-        "ota_krw": 80453,
-        "left": 2
+        "ota_krw": 62280,
+        "left": 1
       },
       "Family Twin": {
-        "ota_krw": 150615,
+        "ota_krw": 76003,
         "left": 1
       },
       "Deluxe Family Twin": {
@@ -84,23 +84,20 @@
       }
     },
     "2026-11-26": {
-      "Standard Twin": null,
+      "Standard Twin": {
+        "ota_krw": 61171,
+        "left": null
+      },
       "Superior Twin": {
-        "ota_krw": 116784,
+        "ota_krw": 71366,
         "left": 1
       },
-      "Deluxe Corner Twin": {
-        "ota_krw": 131181,
-        "left": 1
-      },
+      "Deluxe Corner Twin": null,
       "ECO Double": null,
       "Standard Double": null,
-      "Superior Double": {
-        "ota_krw": 116784,
-        "left": 1
-      },
+      "Superior Double": null,
       "Family Twin": {
-        "ota_krw": 218634,
+        "ota_krw": 76003,
         "left": 1
       },
       "Deluxe Family Twin": {
@@ -117,10 +114,7 @@
         "ota_krw": 188150,
         "left": 1
       },
-      "Deluxe Corner Twin": {
-        "ota_krw": 211346,
-        "left": 1
-      },
+      "Deluxe Corner Twin": null,
       "ECO Double": null,
       "Standard Double": {
         "ota_krw": 161266,
@@ -131,11 +125,11 @@
         "left": 2
       },
       "Family Twin": {
-        "ota_krw": 352244,
+        "ota_krw": 268776,
         "left": 1
       },
       "Deluxe Family Twin": {
-        "ota_krw": 303439,
+        "ota_krw": 295661,
         "left": 1
       }
     },
@@ -148,10 +142,7 @@
         "ota_krw": 224481,
         "left": 1
       },
-      "Deluxe Corner Twin": {
-        "ota_krw": 252158,
-        "left": 1
-      },
+      "Deluxe Corner Twin": null,
       "ECO Double": null,
       "Standard Double": {
         "ota_krw": 192413,
@@ -162,11 +153,11 @@
         "left": 2
       },
       "Family Twin": {
-        "ota_krw": 420264,
+        "ota_krw": 320688,
         "left": 1
       },
       "Deluxe Family Twin": {
-        "ota_krw": 362034,
+        "ota_krw": 352757,
         "left": 1
       }
     },
@@ -176,10 +167,7 @@
         "ota_krw": 222764,
         "left": 1
       },
-      "Deluxe Corner Twin": {
-        "ota_krw": 68961,
-        "left": 1
-      },
+      "Deluxe Corner Twin": null,
       "ECO Double": {
         "ota_krw": 121420,
         "left": 1
@@ -189,7 +177,7 @@
         "left": 1
       },
       "Superior Double": {
-        "ota_krw": 176851,
+        "ota_krw": 71366,
         "left": 2
       },
       "Family Twin": {
@@ -217,22 +205,22 @@
         "left": 1
       },
       "Superior Double": {
-        "ota_krw": 153044,
+        "ota_krw": 71366,
         "left": 2
       },
       "Family Twin": {
-        "ota_krw": 99600,
+        "ota_krw": 76003,
         "left": 1
       },
       "Deluxe Family Twin": {
-        "ota_krw": 85800,
+        "ota_krw": 83606,
         "left": 2
       }
     },
     "2026-12-01": {
       "Standard Twin": null,
       "Superior Twin": {
-        "ota_krw": 127024,
+        "ota_krw": 77847,
         "left": 1
       },
       "Deluxe Corner Twin": {
@@ -241,15 +229,15 @@
       },
       "ECO Double": null,
       "Standard Double": {
-        "ota_krw": 108878,
+        "ota_krw": 86198,
         "left": 1
       },
       "Superior Double": {
-        "ota_krw": 127024,
+        "ota_krw": 89205,
         "left": 3
       },
       "Family Twin": {
-        "ota_krw": 120000,
+        "ota_krw": 95004,
         "left": 1
       },
       "Deluxe Family Twin": {
@@ -260,7 +248,7 @@
     "2026-12-02": {
       "Standard Twin": null,
       "Superior Twin": {
-        "ota_krw": 127024,
+        "ota_krw": 77847,
         "left": 1
       },
       "Deluxe Corner Twin": {
@@ -276,11 +264,11 @@
         "left": 1
       },
       "Superior Double": {
-        "ota_krw": 127024,
+        "ota_krw": 89205,
         "left": 3
       },
       "Family Twin": {
-        "ota_krw": 120000,
+        "ota_krw": 95004,
         "left": 1
       },
       "Deluxe Family Twin": {
@@ -291,7 +279,7 @@
     "2026-12-03": {
       "Standard Twin": null,
       "Superior Twin": {
-        "ota_krw": 268390,
+        "ota_krw": 77847,
         "left": 1
       },
       "Deluxe Corner Twin": {
@@ -311,7 +299,7 @@
         "left": 2
       },
       "Family Twin": {
-        "ota_krw": 465366,
+        "ota_krw": 263415,
         "left": 1
       },
       "Deluxe Family Twin": {
@@ -378,20 +366,20 @@
     "2026-12-06": {
       "Standard Twin": null,
       "Superior Twin": {
-        "ota_krw": 127024,
+        "ota_krw": 112683,
         "left": 2
       },
       "Deluxe Corner Twin": null,
       "ECO Double": {
-        "ota_krw": 171220,
+        "ota_krw": 63723,
         "left": 1
       },
       "Standard Double": {
-        "ota_krw": 108878,
+        "ota_krw": 76457,
         "left": 1
       },
       "Superior Double": {
-        "ota_krw": 127024,
+        "ota_krw": 112683,
         "left": 3
       },
       "Family Twin": {
@@ -400,7 +388,7 @@
       },
       "Deluxe Family Twin": {
         "ota_krw": 85800,
-        "left": 2
+        "left": 1
       }
     }
   }
