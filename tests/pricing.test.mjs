@@ -10,6 +10,7 @@ import {
 import { StaticDataSource, toPricesDocument } from '../app/js/static-source.js';
 import { ChannelManagerAdapter } from '../app/js/channel-manager.js';
 import { summarise } from '../app/js/stats.js';
+import { DemoBookingsSource } from '../app/js/bookings-source.js';
 
 const prices = JSON.parse(fs.readFileSync(new URL('../prices.json', import.meta.url), 'utf8'));
 
@@ -171,6 +172,25 @@ test('owner stats read the live price file without treating null as a price', ()
   const eco = report.byType.find((row) => row.code === 'ECO Double');
   assert.ok(eco.nights > 0);
   assert.equal(report.days.find((day) => day.date === '2026-12-02').rooms.find((room) => room.code === 'ECO Double').status, 'enquire');
+});
+
+test('demo bookings match a test reference and refuse the wrong surname', async () => {
+  const src = new DemoBookingsSource();
+  src.data = JSON.parse(fs.readFileSync('app/data/demo-bookings.json', 'utf8'));
+  const found = await src.lookupBooking({ reference: 'test1234', who: 'kim' });
+  assert.equal(found.roomCode, 'Family Twin');
+  assert.equal(found.nights, 3);
+  assert.equal(found.status, 'confirmed');
+  assert.equal(found.demo, true);
+  const byEmail = await src.lookupBooking({ reference: 'TEST5678', who: 'guest.sato@example.com' });
+  assert.equal(byEmail.status, 'pending');
+  assert.equal(await src.lookupBooking({ reference: 'TEST1234', who: 'Park' }), null);
+  const thread = await src.listMessages('TEST1234', 'ko');
+  assert.match(thread[0].body, /테스트/);
+  const doc = fs.readFileSync('docs/INTEGRATION.md', 'utf8');
+  assert.match(doc, /lookupBooking/);
+  assert.match(doc, /sendMessage/);
+  assert.match(doc, /TEST1234/);
 });
 
 test('the integration note names the separate owner app and the gate', () => {

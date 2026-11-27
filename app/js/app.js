@@ -3,6 +3,7 @@ import { LANGS, translate } from './i18n.js';
 import { GROUPS, PROPERTY, ROOM_LIST, roomPhotos } from './catalog.js';
 import { StaticDataSource } from './static-source.js';
 import { createGuestSource } from './channel-manager.js';
+import { bookingIcon, renderBooking, restoreBookingSession } from './booking-view.js';
 import {
   defaultCheckinISO,
   quoteRoom,
@@ -22,6 +23,7 @@ const ICONS = {
   prices: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 3.5V7M16 3.5V7M4 10h16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
   enquire: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6.5h14v11H5z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5 7.5 12 13l7-5.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>',
   info: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 11v5M12 8h.01" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
+  booking: bookingIcon(),
 };
 
 const ARIA_PHOTO = {
@@ -103,7 +105,7 @@ function parseRoute() {
     const roomId = decodeURIComponent(raw.slice(5));
     return { tab: 'rooms', roomId: state.rooms.some((room) => room.id === roomId) ? roomId : null };
   }
-  const tabs = ['rooms', 'prices', 'enquire', 'info'];
+  const tabs = ['rooms', 'prices', 'enquire', 'booking', 'info'];
   return { tab: tabs.indexOf(raw) === -1 ? 'rooms' : raw, roomId: null };
 }
 
@@ -281,6 +283,7 @@ function renderTabs(route) {
     ['rooms', 'nav_rooms', 'rooms'],
     ['prices', 'tab_prices', 'prices'],
     ['enquire', 'nav_enquire', 'enquire'],
+    ['booking', 'tab_booking', 'booking'],
     ['info', 'tab_info', 'info'],
   ];
   nav.replaceChildren();
@@ -788,6 +791,9 @@ function render() {
   } else if (route.tab === 'enquire') {
     main.append(renderEnquire());
     ensureCaptcha();
+  } else if (route.tab === 'booking') {
+    main.append(el('p', { class: 'loading' }, t('loading')));
+    renderBooking({ lang: state.lang, t, source });
   } else if (route.tab === 'info') {
     main.append(renderInfo());
   } else {
@@ -811,6 +817,7 @@ function registerServiceWorker() {
 
 async function boot() {
   restore();
+  restoreBookingSession();
   createForm();
   window.addEventListener('hashchange', () => render());
   window.addEventListener('online', () => {

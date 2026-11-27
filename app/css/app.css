@@ -329,6 +329,15 @@ main {
 .btn-ink { background: var(--ink); color: var(--bg); }
 .btn-ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
 .btn-small { width: auto; min-height: 40px; margin-top: 0; padding: 8px 14px; font-size: 13px; }
+.btn-ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.quick-actions { display: flex; flex-direction: column; gap: 8px; margin: 8px 0; }
+.quick-actions .btn { margin-top: 0; }
+.bubble { margin: 10px 0; padding: 10px 12px; border-radius: 14px; background: var(--bg); }
+.bubble.is-property { border-left: 3px solid var(--ink); }
+.bubble.is-guest { border: 1px dashed var(--ink); }
+.booking-ref { margin: 0; font-weight: 600; letter-spacing: 0.08em; }
+.booking-card h2 { margin-top: 12px; }
+.booking-notice { min-height: 0; }
 .btn:disabled { opacity: 0.45; }
 .text-btn {
   background: none;
@@ -393,9 +402,10 @@ main {
 .time-card strong {
   display: block;
   margin: 6px 0;
-  font-family: var(--serif);
+  font-family: var(--sans);
   font-size: 32px;
-  font-weight: 500;
+  font-weight: 600;
+  font-variant-numeric: lining-nums tabular-nums;
 }
 .time-card p { margin: 0; font-size: 13px; color: var(--ink-soft); }
 .address { font-size: 16px; }
@@ -470,7 +480,7 @@ main {
 .tabbar {
   flex: 0 0 auto;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 0;
   padding: 6px 6px max(8px, env(safe-area-inset-bottom));
   background: rgba(255, 252, 250, 0.96);
@@ -482,11 +492,11 @@ main {
   align-items: center;
   gap: 2px;
   min-height: 52px;
-  padding: 6px 2px 4px;
+  padding: 6px 0 4px;
   border: 0;
   background: transparent;
   color: var(--ink-soft);
-  font-size: 11px;
+  font-size: 10px;
   position: relative;
 }
 .tab.active { color: var(--ink); font-weight: 600; }

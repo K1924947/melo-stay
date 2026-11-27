@@ -8,9 +8,14 @@
 //   getRates()            nightly rate + availability, API or parsed iCal
 //   pushRates()           send owner edits back so the OTAs match
 //   listBookings()        poll, or receive a webhook and store Booking[]
+//   lookupBooking()       confirmation code + surname or email
+//   listMessages()        thread on one booking
+//   sendMessage()         guest message or a change request
+//   listInbox()           messages the property can see
 //   recordEnquiry()       optional: write a direct lead back into the vendor
 
 import { DataSource } from './data-source.js';
+import { DemoBookingsSource } from './bookings-source.js';
 
 export class ChannelManagerAdapter extends DataSource {
   /**
@@ -21,6 +26,46 @@ export class ChannelManagerAdapter extends DataSource {
     this.fallback = fallback;
     this.connected = false;
     this.vendor = null;
+    this.bookings = new DemoBookingsSource();
+  }
+
+  /**
+   * TODO(channel-manager): when connected, say mode "channel-manager" and demo false.
+   * Until then the guest app is on the fake TEST bookings.
+   */
+  async describeBookings() {
+    if (this.connected) return { mode: 'channel-manager', demo: false };
+    return this.bookings.describeBookings();
+  }
+
+  /**
+   * TODO(channel-manager): look up a reservation by confirmation code plus
+   * surname or email. Return the GuestBooking shape, or null.
+   */
+  async lookupBooking(query) {
+    if (this.connected) throw new Error('Channel manager booking lookup is not connected.');
+    return this.bookings.lookupBooking(query);
+  }
+
+  /** TODO(channel-manager): messages stored for this confirmation code. */
+  async listMessages(reference, lang) {
+    if (this.connected) throw new Error('Channel manager messages are not connected.');
+    return this.bookings.listMessages(reference, lang);
+  }
+
+  /**
+   * TODO(channel-manager): post the guest message to the reservation thread.
+   * Demo mode also emails it through Web3Forms with the booking number in the subject.
+   */
+  async sendMessage(input) {
+    if (this.connected) throw new Error('Channel manager messages are not connected.');
+    return this.bookings.sendMessage(input);
+  }
+
+  /** TODO(channel-manager): inbox of guest messages for the owner app. */
+  async listInbox() {
+    if (this.connected) return [];
+    return this.bookings.listInbox();
   }
 
   /**

@@ -1,0 +1,54 @@
+{
+  "mode": "demo",
+  "note": "Fake bookings for the guest app. Not real guests and not real stays.",
+  "bookings": [
+    {
+      "reference": "TEST1234",
+      "surname": "Kim",
+      "email": "guest.kim@example.com",
+      "roomTypeId": "ftr",
+      "roomCode": "Family Twin",
+      "checkIn": "2026-12-02",
+      "checkOut": "2026-12-05",
+      "guests": 3,
+      "status": "confirmed"
+    },
+    {
+      "reference": "TEST5678",
+      "surname": "Sato",
+      "email": "guest.sato@example.com",
+      "roomTypeId": "sdr",
+      "roomCode": "Standard Double",
+      "checkIn": "2026-12-08",
+      "checkOut": "2026-12-10",
+      "guests": 2,
+      "status": "pending"
+    },
+    {
+      "reference": "TEST9012",
+      "surname": "Chen",
+      "email": "guest.chen@example.com",
+      "roomTypeId": "str",
+      "roomCode": "Standard Twin",
+      "checkIn": "2026-11-20",
+      "checkOut": "2026-11-22",
+      "guests": 1,
+      "status": "cancelled"
+    }
+  ],
+  "messages": [
+    {
+      "id": "seed-test1234",
+      "reference": "TEST1234",
+      "from": "property",
+      "kind": "note",
+      "at": "2026-11-20T09:00:00.000Z",
+      "body": {
+        "en": "Sample note on this test booking. It is not from a real stay.",
+        "zh": "这是测试订单上的示例留言，并非真实入住。",
+        "ko": "테스트 예약에 붙인 예시 메시지입니다. 실제 숙박이 아닙니다.",
+        "ja": "このテスト予約への見本メッセージです。実際の滞在ではありません。"
+      }
+    }
+  ]
+}

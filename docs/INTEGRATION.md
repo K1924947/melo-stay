@@ -18,7 +18,8 @@ A service worker cannot see URLs outside its own folder on GitHub Pages. `prices
 - Guests look at rooms, prices, an enquiry form, and practical info. Enquiry mail goes through the same Web3Forms form as the website (`melostayseoul@gmail.com`, `+82-10-4093-8977`).
 - Prices use the same rules as `index.html`. With `discount_pct` at 0, the guest sees the Booking.com amount and no strikethrough. A `null` room is unavailable. Dates outside the file are not treated as sold; the guest is asked to enquire.
 - The owner app only reads. It shows a month calendar (price and availability per night, then each room type on tap) and a stats page (sold-out nights, average / min / max, price by room type, weekday vs weekend, cheapest and dearest dates, room types open per night). It does not edit rooms, download JSON, or commit to GitHub.
-- Placeholders for bookings, occupancy, revenue, and enquiries stay on the Later tab and say they appear once a channel manager is connected. `ChannelManagerAdapter` still returns an empty list for those.
+- The guest app has a My booking tab. Until a channel manager is connected it uses fake rows in `app/data/demo-bookings.json` (for example booking `TEST1234`, surname `Kim`). A banner says it is test mode. The login is kept in `sessionStorage` only. A message is stored in that same browser and also emailed through the existing Web3Forms form, with the booking number in the subject.
+- Placeholders for bookings, occupancy, revenue, and enquiries stay on the owner Later tab. That tab also lists guest messages from the bookings source. In demo mode those are the sample lines from the test file, not a live inbox.
 - There is no channel manager yet. The adapter forwards reads to `StaticDataSource` and leaves the write paths unimplemented.
 
 ## What the light gate does not do
@@ -73,7 +74,8 @@ The owner stats treat Friday and Saturday nights as the weekend. A night is sold
 | RoomType | One of the eight types. `id` is the short website id (`str`, `suptr`, …). `code` is the `prices.json` name. `capacity` is 4 for the two family types and 2 for the others, matching the website. |
 | NightRate | One type on one stay-night. `amount` is the Booking.com figure or `null`. `known: false` means the date is outside the feed. `available` is true only when `known` and `amount` is a number. `unitsLeft` is the `left` count. `enquireOnly` is the room-level flag. |
 | Enquiry | A direct question from the guest app. v1 sends it by email. It is not a booking. The owner Later tab does not list them yet. |
-| Booking | A reservation from a channel manager: channel, external id, room type, stay, guests, status (`confirmed`, `cancelled`, `pending`), amount. v1 has none. |
+| GuestBooking | What a guest sees after login: `reference`, surname, room type, `checkIn`, `checkOut`, `nights`, `guests`, `status` (`confirmed`, `pending`, `cancelled`). Demo rows are fake. |
+| BookingMessage | One line on a booking: `id`, `reference`, `from` (`guest` or `property`), `kind` (`message`, `note`, `early-checkin`, `late-checkout`, `change`), `at`, `body`. |
 
 ## DataSource
 
@@ -97,7 +99,11 @@ The owner stats treat Friday and Saturday nights as the weekend. A night is sold
 | `listRoomTypes()` | Map the vendor’s room ids onto our eight ids. Do not rename our ids; the photos and the website use them. |
 | `getRates()` | Replace the `prices.json` read with nightly rate and availability. An iCal feed can usually fill `available` only, not `amount`. The owner calendar and stats read this method’s data, via `summarise()`. |
 | `pushRates(rates)` | Not used by the owner app. v1 does not edit rates. A later backend can push them if the vendor allows it. |
-| `listBookings()` | Poll reservations, or accept a webhook and store `Booking` records. The Later tab is waiting on this. Map cancellations to `cancelled`. |
+| `lookupBooking({ reference, who })` | Find one reservation. `who` is the surname or the email on the booking, compared without case. Return a GuestBooking or `null`. Do not return other guests' stays. |
+| `listMessages(reference, lang)` | The thread for that confirmation code. |
+| `sendMessage({ reference, body, kind, captchaToken })` | Store the guest's message on the reservation. `kind` is `message`, `early-checkin`, `late-checkout`, or `change`. Demo mode also posts it to Web3Forms with subject `Booking REFERENCE — kind`. |
+| `listInbox()` | Messages the property should see. The owner Later tab calls this. Demo mode returns only the sample file. |
+| `listBookings()` | Poll reservations, or accept a webhook and store `Booking` records. The Later tab is waiting on this for occupancy and revenue. Map cancellations to `cancelled`. |
 | `recordEnquiry()` | Optional. After the guest email succeeds, create a lead in the channel manager. Mail must still work if this call fails. The owner occupancy, revenue, and enquiry figures would come from here and from `listBookings()`. |
 
 Until those are filled in, the adapter reports `connected: false` and `mode: 'static'`.

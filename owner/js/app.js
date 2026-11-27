@@ -19,6 +19,7 @@ const state = {
   report: null,
   rooms: [],
   connection: null,
+  inbox: [],
 };
 
 function text(key, vars) {
@@ -316,9 +317,19 @@ function renderStats() {
 
 function renderLater() {
   const items = ['bookings', 'occupancy', 'revenue', 'enquiries'];
+  const inbox = state.inbox || [];
+  const messages = el('section', { class: 'placeholder' }, [
+    el('h2', {}, text('guestMessages')),
+    el('p', {}, text('guestMessagesNote')),
+    el('span', { class: 'tag' }, text('coming')),
+  ]);
+  inbox.forEach((message) => {
+    messages.append(el('p', { class: 'note' }, message.reference + ' · ' + message.body));
+  });
   return el('div', {}, [
     el('h1', {}, text('laterTitle')),
     el('p', { class: 'lede' }, text('laterBody')),
+    messages,
     ...items.map((key) => el('section', { class: 'placeholder' }, [
       el('h2', {}, text(key)),
       el('span', { class: 'tag' }, text('coming')),
@@ -400,6 +411,7 @@ async function boot() {
     state.rooms = await source.listRoomTypes();
     state.report = summarise(store.publishedPrices());
     state.connection = await source.describeConnection();
+    try { state.inbox = await source.listInbox(); } catch (err) { state.inbox = []; }
     state.ready = true;
   } catch (err) {
     state.error = true;
