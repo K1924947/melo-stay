@@ -1,33 +1,12 @@
 // Reads the live site: /prices.json plus the static room catalogue.
-// Owner edits stay in this browser until they are downloaded or committed.
-// They are not written back into the guest view, and the token for a
-// GitHub commit never passes through this file.
+// prices.json is fetched network-first. A service worker scoped to /app/
+// or /owner/ cannot see that root file, so the cache lives here.
 
 import { DataSource } from './data-source.js';
 import { PROPERTY, ROOM_LIST } from './catalog.js';
-import { ROOM_CODES, SCHEMA_VERSION } from './schema.js';
-import { enumerateNights } from './format.js';
+import { ROOM_CODES } from './schema.js';
 
-const RATE_DRAFT_KEY = 'melo_owner_rate_draft';
-const ROOM_DRAFT_KEY = 'melo_owner_room_draft';
 const PRICE_CACHE = 'melo-prices-v1';
-
-function storageGet(key) {
-  try {
-    const raw = localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : null;
-  } catch (err) {
-    return null;
-  }
-}
-
-function storageSet(key, value) {
-  localStorage.setItem(key, JSON.stringify(value));
-}
-
-function storageDrop(key) {
-  localStorage.removeItem(key);
-}
 
 export function emptyPricesDocument(base) {
   return {
@@ -51,17 +30,12 @@ function normaliseCell(cell) {
   return { ota_krw: Math.round(amount), left };
 }
 
-/**
- * Rebuild a prices.json document in the shape the website and the
- * twice-daily job already use. Extra fields are dropped on purpose.
- */
+/** Rebuild prices.json in the shape the website and the twice-daily job use. */
 export function toPricesDocument(source) {
   const doc = emptyPricesDocument(source);
   const rooms = (source && source.rooms) || {};
   Object.keys(rooms).forEach((code) => {
-    if (rooms[code] && rooms[code].enquire_only) {
-      doc.rooms[code] = { enquire_only: true };
-    }
+    if (rooms[code] && rooms[code].enquire_only) doc.rooms[code] = { enquire_only: true };
   });
   const nights = (source && source.nights) || {};
   Object.keys(nights).sort().forEach((date) => {
@@ -72,45 +46,6 @@ export function toPricesDocument(source) {
     doc.nights[date] = row;
   });
   return doc;
-}
-
-export function clonePrices(doc) {
-  return toPricesDocument(doc);
-}
-
-function mergeCopy(base, override) {
-  if (!override) return { ...base };
-  const next = { ...base };
-  Object.keys(override).forEach((key) => {
-    if (typeof override[key] === 'string') next[key] = override[key];
-  });
-  return next;
-}
-
-export function applyRoomOverrides(rooms, overrides) {
-  const byId = (overrides && overrides.roomTypes) || {};
-  return rooms.map((room) => {
-    const patch = byId[room.id];
-    if (!patch) return { ...room, enquireOnly: false, copy: { ...room.copy } };
-    let capacity = room.capacity;
-    if (Number.isInteger(patch.capacity) && patch.capacity >= 1 && patch.capacity <= 8) {
-      capacity = patch.capacity;
-    }
-    const copy = {};
-    for (const lang of Object.keys(room.copy)) {
-      copy[lang] = mergeCopy(room.copy[lang], patch.copy && patch.copy[lang]);
-    }
-    return { ...room, capacity, copy };
-  });
-}
-
-export function roomOverridesDocument(draft) {
-  return {
-    schema: 'melo.room-overrides',
-    schemaVersion: SCHEMA_VERSION,
-    updated: new Date().toISOString(),
-    roomTypes: (draft && draft.roomTypes) || {},
-  };
 }
 
 async function fetchPricesDocument() {
@@ -125,7 +60,7 @@ async function fetchPricesDocument() {
         headers: { 'Content-Type': 'application/json' },
       }));
     } catch (err) {
-      /* Cache Storage can be unavailable in a private window. The network copy still stands. */
+      /* Cache Storage can be unavailable. The network copy still stands. */
     }
     return data;
   } catch (err) {
@@ -140,28 +75,16 @@ async function fetchPricesDocument() {
   }
 }
 
-async function fetchRoomOverrides() {
-  try {
-    const response = await fetch('/app/data/room-overrides.json', { cache: 'no-store' });
-    if (!response.ok) return null;
-    return response.json();
-  } catch (err) {
-    return null;
-  }
-}
-
 export class StaticDataSource extends DataSource {
   constructor() {
     super();
     this.prices = null;
-    this.remoteOverrides = null;
     this.loaded = false;
     this.sessionEnquiries = [];
   }
 
   async load() {
     this.prices = toPricesDocument(await fetchPricesDocument());
-    this.remoteOverrides = await fetchRoomOverrides();
     this.loaded = true;
     return this;
   }
@@ -175,21 +98,15 @@ export class StaticDataSource extends DataSource {
   }
 
   async listRoomTypes() {
-    const rooms = applyRoomOverrides(ROOM_LIST, this.remoteOverrides).map((room) => ({
+    return ROOM_LIST.map((room) => ({
       ...room,
       enquireOnly: !!(this.prices && this.prices.rooms && this.prices.rooms[room.code] && this.prices.rooms[room.code].enquire_only),
     }));
-    return rooms;
   }
 
-  /**
-   * Rates from the published prices.json.
-   * Pass `document` to quote a draft instead.
-   */
   ratesFrom(document, query) {
     const doc = document || this.prices;
     if (!doc || !doc.nights) return [];
-    const rooms = applyRoomOverrides(ROOM_LIST, this.remoteOverrides);
     const from = query && query.from;
     const to = query && query.to;
     const onlyId = query && query.roomTypeId;
@@ -200,10 +117,9 @@ export class StaticDataSource extends DataSource {
     });
     const rates = [];
     dates.forEach((date) => {
-      rooms.forEach((room) => {
+      ROOM_LIST.forEach((room) => {
         if (onlyId && room.id !== onlyId) return;
         const cell = doc.nights[date] ? doc.nights[date][room.code] : undefined;
-        const known = Object.prototype.hasOwnProperty.call(doc.nights, date);
         const amount = cell && cell.ota_krw != null ? cell.ota_krw : null;
         rates.push({
           roomTypeId: room.id,
@@ -212,7 +128,7 @@ export class StaticDataSource extends DataSource {
           currency: 'KRW',
           amount,
           unitsLeft: cell && cell.left != null ? cell.left : null,
-          known,
+          known: true,
           available: amount != null,
           enquireOnly: !!(doc.rooms && doc.rooms[room.code] && doc.rooms[room.code].enquire_only),
           source: doc.source || 'Booking.com',
@@ -245,65 +161,5 @@ export class StaticDataSource extends DataSource {
       mode: 'static',
       detail: 'Reading /prices.json and the room catalogue shipped with the website.',
     };
-  }
-
-  readRateDraft() {
-    const draft = storageGet(RATE_DRAFT_KEY);
-    if (!draft || !draft.document) return null;
-    return {
-      basedOnUpdated: draft.basedOnUpdated || '',
-      savedAt: draft.savedAt || '',
-      document: toPricesDocument(draft.document),
-    };
-  }
-
-  writeRateDraft(document) {
-    const wrapper = {
-      basedOnUpdated: this.prices ? this.prices.updated : '',
-      savedAt: new Date().toISOString(),
-      document: toPricesDocument(document),
-    };
-    const existing = storageGet(RATE_DRAFT_KEY);
-    if (existing && existing.basedOnUpdated) wrapper.basedOnUpdated = existing.basedOnUpdated;
-    storageSet(RATE_DRAFT_KEY, wrapper);
-    return wrapper;
-  }
-
-  beginRateDraft() {
-    const existing = this.readRateDraft();
-    if (existing) return existing;
-    const wrapper = {
-      basedOnUpdated: this.prices ? this.prices.updated : '',
-      savedAt: new Date().toISOString(),
-      document: clonePrices(this.prices || emptyPricesDocument()),
-    };
-    storageSet(RATE_DRAFT_KEY, wrapper);
-    return wrapper;
-  }
-
-  clearRateDraft() {
-    storageDrop(RATE_DRAFT_KEY);
-  }
-
-  readRoomDraft() {
-    return storageGet(ROOM_DRAFT_KEY);
-  }
-
-  writeRoomDraft(roomTypes) {
-    const wrapper = {
-      savedAt: new Date().toISOString(),
-      roomTypes: roomTypes || {},
-    };
-    storageSet(ROOM_DRAFT_KEY, wrapper);
-    return wrapper;
-  }
-
-  clearRoomDraft() {
-    storageDrop(ROOM_DRAFT_KEY);
-  }
-
-  /** Nights between two dates, used by enquiry prefill. */
-  stayNights(checkin, checkout) {
-    return enumerateNights(checkin, checkout);
   }
 }

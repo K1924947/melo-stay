@@ -9,7 +9,7 @@ import {
 } from '../app/js/pricing.js';
 import { StaticDataSource, toPricesDocument } from '../app/js/static-source.js';
 import { ChannelManagerAdapter } from '../app/js/channel-manager.js';
-import { OWNER_GATE } from '../app/js/owner.js';
+import { summarise } from '../app/js/stats.js';
 
 const prices = JSON.parse(fs.readFileSync(new URL('../prices.json', import.meta.url), 'utf8'));
 
@@ -162,12 +162,27 @@ test('the channel manager stub does not pretend to be connected', async () => {
   await assert.rejects(() => adapter.connect({}), /No channel manager is connected/);
 });
 
-test('the integration note names the gate, the feed, and the open questions', () => {
+test('owner stats read the live price file without treating null as a price', () => {
+  const report = summarise(prices);
+  assert.equal(report.nights, 14);
+  assert.equal(report.days.find((day) => day.date === '2026-11-28').minPrice, 424391);
+  assert.equal(report.days.find((day) => day.date === '2026-11-28').openCount, 2);
+  assert.equal(report.days.find((day) => day.date === '2026-11-28').soldOut, false);
+  const eco = report.byType.find((row) => row.code === 'ECO Double');
+  assert.ok(eco.nights > 0);
+  assert.equal(report.days.find((day) => day.date === '2026-12-02').rooms.find((room) => room.code === 'ECO Double').status, 'enquire');
+});
+
+test('the integration note names the separate owner app and the gate', () => {
   const doc = fs.readFileSync('docs/INTEGRATION.md', 'utf8');
-  assert.match(doc, new RegExp(OWNER_GATE));
+  const owner = fs.readFileSync('owner/js/i18n.js', 'utf8');
+  const guest = fs.readFileSync('app/js/app.js', 'utf8');
+  assert.match(doc, /melo-owner/);
+  assert.match(doc, /\/owner\//);
   assert.match(doc, /prices\.json/);
   assert.match(doc, /webhook/i);
   assert.match(doc, /iCal/);
-  assert.match(doc, /GitHub Pages/);
-  assert.equal(OWNER_GATE, 'melo-owner');
+  assert.match(owner, /melo-owner/);
+  assert.equal(guest.includes('renderOwner'), false);
+  assert.equal(guest.includes("navigate('owner')"), false);
 });

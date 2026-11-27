@@ -176,7 +176,12 @@ main {
   border-radius: 18px;
   box-shadow: var(--shadow-soft);
 }
-.room-card { margin-bottom: 16px; overflow: hidden; }
+.room-card {
+  margin-bottom: 16px;
+  overflow: hidden;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 460px;
+}
 .room-card.is-sold, .price-row.is-sold { border-style: dashed; }
 .room-photo, .price-photo {
   display: block;
@@ -325,7 +330,7 @@ main {
 .btn-ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
 .btn-small { width: auto; min-height: 40px; margin-top: 0; padding: 8px 14px; font-size: 13px; }
 .btn:disabled { opacity: 0.45; }
-.text-btn, .staff-link {
+.text-btn {
   background: none;
   border: 0;
   padding: 8px 0;
@@ -334,12 +339,6 @@ main {
   border-bottom: 1px solid var(--ink);
 }
 .back { margin-bottom: 4px; }
-.staff-link {
-  margin: 28px 0 8px;
-  color: var(--ink-faint);
-  border-bottom-color: var(--line);
-  font-size: 13px;
-}
 
 .note, .banner {
   font-size: 14px;
@@ -551,61 +550,6 @@ main {
 .thumb.active { border-color: var(--accent); opacity: 1; }
 .thumb img { width: 100%; height: 100%; object-fit: cover; }
 
-.owner-nav {
-  display: flex;
-  gap: 6px;
-  overflow-x: auto;
-  position: sticky;
-  top: 0;
-  z-index: 4;
-  padding: 6px 0 8px;
-  background: rgba(247, 243, 238, 0.94);
-}
-.owner-nav button {
-  flex: 0 0 auto;
-  min-height: 40px;
-  padding: 8px 12px;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: var(--paper);
-  color: var(--ink);
-  font-size: 14px;
-}
-.owner-nav button[aria-current="page"] {
-  background: var(--ink);
-  color: var(--bg);
-  border-color: var(--ink);
-}
-.owner-tools { display: flex; gap: 16px; margin-bottom: 8px; }
-.legend { display: flex; flex-wrap: wrap; gap: 10px 14px; margin: 10px 0; }
-.legend .status-line { margin: 0; }
-.night-card, .night-edit, .gate { padding: 14px; margin: 12px 0; }
-.avail-row {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  column-gap: 8px;
-  row-gap: 2px;
-  padding: 8px 0;
-  border-top: 1px solid var(--line);
-}
-.avail-name { font-weight: 500; }
-.avail-meta { grid-column: 2; color: var(--ink-soft); font-size: 13px; font-variant-numeric: tabular-nums; }
-.preview { font-size: 14px; }
-.segmented { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
-.segmented button {
-  min-height: 40px;
-  padding: 8px 12px;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: var(--paper);
-}
-.segmented button.active { background: var(--ink); color: var(--bg); border-color: var(--ink); }
-.gate-pass { font-weight: 600; }
-.gate-error {
-  padding: 8px 10px;
-  border-left: 3px solid var(--ink);
-  background: var(--bg-warm);
-}
 .loading { padding: 24px 0; font-family: var(--serif); font-size: 28px; }
 
 button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {

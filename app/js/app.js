@@ -3,7 +3,6 @@ import { LANGS, translate } from './i18n.js';
 import { GROUPS, PROPERTY, ROOM_LIST, roomPhotos } from './catalog.js';
 import { StaticDataSource } from './static-source.js';
 import { createGuestSource } from './channel-manager.js';
-import { renderOwner } from './owner.js';
 import {
   defaultCheckinISO,
   quoteRoom,
@@ -49,9 +48,6 @@ const state = {
   pricesError: false,
   offline: typeof navigator !== 'undefined' ? !navigator.onLine : false,
   enquiryStatus: null,
-  ownerLang: 'ko',
-  ownerAuthed: false,
-  ownerDate: '',
   datesReady: false,
   rooms: ROOM_LIST.map((room) => ({ ...room, enquireOnly: false })),
 };
@@ -70,9 +66,6 @@ function restore() {
   try {
     const lang = localStorage.getItem('melo_lang');
     if (LANGS.some((item) => item.id === lang)) state.lang = lang;
-    const ownerLang = localStorage.getItem('melo_owner_lang');
-    if (ownerLang === 'en' || ownerLang === 'ko') state.ownerLang = ownerLang;
-    state.ownerAuthed = sessionStorage.getItem('melo_owner_ok') === '1';
     const stay = JSON.parse(sessionStorage.getItem('melo_stay') || 'null');
     if (stay && typeof stay === 'object') {
       state.checkin = stay.checkin || '';
@@ -101,18 +94,17 @@ function persistStay() {
 }
 
 function parseRoute() {
-  const raw = (location.hash || '#rooms').replace(/^#/, '');
+  let raw = (location.hash || '#rooms').replace(/^#/, '');
   if (raw === 'owner' || raw.startsWith('owner/')) {
-    const section = raw.split('/')[1] || 'overview';
-    const allowed = ['overview', 'rooms', 'rates', 'availability', 'export'];
-    return { owner: true, section: allowed.indexOf(section) === -1 ? 'overview' : section, tab: 'rooms', roomId: null };
+    history.replaceState(null, '', '#rooms');
+    raw = 'rooms';
   }
   if (raw.startsWith('room/')) {
     const roomId = decodeURIComponent(raw.slice(5));
-    return { owner: false, section: null, tab: 'rooms', roomId: state.rooms.some((room) => room.id === roomId) ? roomId : null };
+    return { tab: 'rooms', roomId: state.rooms.some((room) => room.id === roomId) ? roomId : null };
   }
   const tabs = ['rooms', 'prices', 'enquire', 'info'];
-  return { owner: false, section: null, tab: tabs.indexOf(raw) === -1 ? 'rooms' : raw, roomId: null };
+  return { tab: tabs.indexOf(raw) === -1 ? 'rooms' : raw, roomId: null };
 }
 
 function navigate(hash) {
@@ -267,25 +259,19 @@ function langSwitch(current, onPick, langs) {
   return wrap;
 }
 
-function renderTopbar(route) {
+function renderTopbar() {
   const bar = document.getElementById('topbar');
   const mark = el('button', {
     type: 'button',
     class: 'wordmark',
-    onclick: () => navigate(route.owner ? 'owner' : 'rooms'),
+    onclick: () => navigate('rooms'),
   }, ['melo stay', el('small', {}, 'SEOUL')]);
-  const switcher = route.owner
-    ? langSwitch(state.ownerLang, (id) => {
-      state.ownerLang = id;
-      try { localStorage.setItem('melo_owner_lang', id); } catch (err) { /* ignore */ }
-      render();
-    }, [{ id: 'ko', label: '한국어' }, { id: 'en', label: 'EN' }])
-    : langSwitch(state.lang, (id) => {
-      state.lang = id;
-      try { localStorage.setItem('melo_lang', id); } catch (err) { /* ignore */ }
-      if (state.messageAuto) state.message = buildEnquiryMessage();
-      render();
-    }, LANGS);
+  const switcher = langSwitch(state.lang, (id) => {
+    state.lang = id;
+    try { localStorage.setItem('melo_lang', id); } catch (err) { /* ignore */ }
+    if (state.messageAuto) state.message = buildEnquiryMessage();
+    render();
+  }, LANGS);
   bar.replaceChildren(mark, switcher);
 }
 
@@ -301,12 +287,11 @@ function renderTabs(route) {
   tabs.forEach(([id, key, icon]) => {
     nav.append(el('button', {
       type: 'button',
-      class: route.tab === id && !route.owner ? 'tab active' : 'tab',
-      'aria-current': route.tab === id && !route.owner ? 'page' : null,
+      class: route.tab === id ? 'tab active' : 'tab',
+      'aria-current': route.tab === id ? 'page' : null,
       onclick: () => navigate(id),
     }, [svgIcon(ICONS[icon]), el('span', {}, t(key))]));
   });
-  nav.hidden = !!route.owner;
 }
 
 function roomButtonLabel(quote) {
@@ -317,7 +302,7 @@ function roomButtonLabel(quote) {
   return t('nav_book');
 }
 
-function renderRoomCard(room) {
+function renderRoomCard(room, eager) {
   const copy = copyOf(room);
   const quote = state.loading || !store.prices ? null : quoteFor(room);
   const card = el('article', {
@@ -328,7 +313,14 @@ function renderRoomCard(room) {
     type: 'button',
     class: 'room-photo',
     onclick: () => navigate('room/' + room.id),
-  }, [el('img', { src: '/images/rooms/' + room.folder + '/1.jpg', alt: copy.name })]);
+  }, [el('img', {
+    src: '/images/rooms/' + room.folder + '/1.jpg',
+    alt: copy.name,
+    width: '600',
+    height: '400',
+    decoding: 'async',
+    loading: eager ? 'eager' : 'lazy',
+  })]);
   const body = el('div', { class: 'room-body' }, [
     el('span', { class: 'tier' }, copy.tier),
     el('h2', {}, copy.name),
@@ -357,7 +349,14 @@ function renderRoomCard(room) {
 function renderRooms() {
   const page = el('div', { class: 'page' });
   page.append(el('div', { class: 'hero-mini' }, [
-    el('img', { src: '/images/hero-mobile.jpg', alt: 'melo stay' }),
+    el('img', {
+      src: '/images/hero-mobile.jpg',
+      alt: 'melo stay',
+      width: '800',
+      height: '360',
+      decoding: 'async',
+      fetchpriority: 'high',
+    }),
     el('div', { class: 'hero-mini-copy' }, [
       el('p', { class: 'hero-kicker' }, t('hero_tagline')),
       el('p', {}, t('hero_sub')),
@@ -374,7 +373,7 @@ function renderRooms() {
     ]));
     group.ids.forEach((id) => {
       const room = state.rooms.find((item) => item.id === id);
-      if (room) page.append(renderRoomCard(room));
+      if (room) page.append(renderRoomCard(room, id === 'str'));
     });
   });
   return page;
@@ -600,7 +599,6 @@ function renderInfo() {
     el('p', {}, t('travel_p')),
     el('h2', {}, t('rules_h')),
     el('p', {}, t('rules_p')),
-    el('button', { type: 'button', class: 'staff-link', onclick: () => navigate('owner') }, t('staff')),
   ]);
   return page;
 }
@@ -772,46 +770,17 @@ function render() {
   const form = document.getElementById('enquiryForm');
   if (form) document.getElementById('formPark').append(form);
   const scroll = main.scrollTop;
-  const viewKey = route.owner
-    ? 'owner/' + route.section
-    : route.roomId ? 'room/' + route.roomId : route.tab;
-  document.documentElement.lang = route.owner ? state.ownerLang : state.lang;
-  document.title = route.owner
-    ? (state.ownerLang === 'ko' ? '운영 · melo stay' : 'Owner · melo stay')
-    : 'melo stay';
-  document.body.dataset.area = route.owner ? 'owner' : 'guest';
-  document.body.dataset.tab = route.owner ? route.section : (route.roomId ? 'room' : route.tab);
-  renderTopbar(route);
+  const viewKey = route.roomId ? 'room/' + route.roomId : route.tab;
+  document.documentElement.lang = state.lang;
+  document.title = 'melo stay';
+  document.body.dataset.area = 'guest';
+  document.body.dataset.tab = route.roomId ? 'room' : route.tab;
+  renderTopbar();
   renderTabs(route);
   updateFormChrome();
   main.replaceChildren();
   if (state.offline) main.append(el('p', { class: 'banner offline' }, t('offline')));
-  if (route.owner) {
-    renderOwner(main, {
-      lang: state.ownerLang,
-      authed: state.ownerAuthed,
-      section: route.section,
-      date: state.ownerDate,
-      rooms: state.rooms,
-      store,
-      go: navigate,
-      openSection: (section, extra) => {
-        if (extra && extra.date) state.ownerDate = extra.date;
-        navigate('owner/' + section);
-      },
-      rerender: () => render(),
-      unlock: () => {
-        state.ownerAuthed = true;
-        try { sessionStorage.setItem('melo_owner_ok', '1'); } catch (err) { /* ignore */ }
-        render();
-      },
-      lock: () => {
-        state.ownerAuthed = false;
-        try { sessionStorage.removeItem('melo_owner_ok'); } catch (err) { /* ignore */ }
-        render();
-      },
-    });
-  } else if (route.roomId) {
+  if (route.roomId) {
     const room = state.rooms.find((item) => item.id === route.roomId);
     main.append(room ? renderRoomDetail(room) : renderRooms());
   } else if (route.tab === 'prices') {
@@ -831,9 +800,13 @@ function render() {
 
 function registerServiceWorker() {
   if (!('serviceWorker' in navigator)) return;
-  navigator.serviceWorker.register('/sw.js', { scope: '/', updateViaCache: 'none' }).catch(() => {
-    /* The app still works if the worker cannot register. */
-  });
+  navigator.serviceWorker.getRegistrations().then((regs) => {
+    regs.forEach((reg) => {
+      const script = reg.active && reg.active.scriptURL;
+      if (reg.scope === location.origin + '/' || (script && /\/sw\.js$/.test(script))) reg.unregister();
+    });
+  }).catch(() => {});
+  navigator.serviceWorker.register('/app/sw.js', { scope: '/app/', updateViaCache: 'none' }).catch(() => {});
 }
 
 async function boot() {
@@ -861,7 +834,6 @@ async function boot() {
       state.datesReady = true;
       persistStay();
     }
-    if (!state.ownerDate) state.ownerDate = state.checkin || defaultCheckinISO(store.prices, todayISO());
   } catch (err) {
     state.pricesError = true;
   } finally {
