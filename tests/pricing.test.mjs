@@ -195,15 +195,29 @@ test('demo bookings match a test reference and refuse the wrong surname', async 
   const after = await src.getThread('TEST1234', 'en');
   const guestLine = after.messages.find((message) => message.body === 'Hello from the test guest');
   assert.equal(guestLine.status, 'read');
-  await src.reply({ threadId: 'ASK', body: 'Reply from the test desk' });
-  const ask = await src.getThread('ASK', 'en');
-  assert.equal(ask.messages[ask.messages.length - 1].body, 'Reply from the test desk');
+  await src.reply({ threadId: 'TEST1234', body: 'Reply from the test desk' });
+  const desk = await src.getThread('TEST1234', 'en');
+  assert.ok(desk.messages.some((message) => message.body === 'Reply from the test desk'));
+  assert.equal(await src.getThread('ASK', 'en'), null);
+  await assert.rejects(() => src.sendMessage({ threadId: 'ASK', body: 'Hello' }), /booking/i);
+  const closed = await src.getThread('TEST9012', 'en');
+  assert.equal(closed.booking.status, 'cancelled');
+  assert.equal(closed.writable, false);
+  await assert.rejects(() => src.sendMessage({ threadId: 'TEST9012', body: 'Hello' }), /cancelled/i);
+  assert.deepEqual(await src.listThreads({ role: 'guest' }), []);
+  const mine = await src.listThreads({ role: 'guest', reference: 'TEST1234' });
+  assert.equal(mine.length, 1);
+  assert.equal(mine[0].id, 'TEST1234');
   const inbox = await src.listInbox();
   assert.ok(inbox.some((row) => row.id === 'TEST1234'));
+  assert.equal(inbox.some((row) => row.id === 'ASK'), false);
+  assert.ok(inbox.some((row) => row.id === 'TEST9012'));
   const doc = fs.readFileSync('docs/INTEGRATION.md', 'utf8');
   assert.match(doc, /lookupBooking/);
   assert.match(doc, /sendMessage/);
   assert.match(doc, /TEST1234/);
+  assert.match(doc, /cancelled/i);
+  assert.doesNotMatch(doc, /Ask melo stay/);
 });
 
 test('the integration note names the separate owner app and the gate', () => {

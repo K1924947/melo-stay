@@ -8,7 +8,6 @@ import { enumerateNights } from './format.js';
 
 const SESSION_KEY = 'melo_booking_session';
 const STORE_KEY = 'melo_demo_mail_v1';
-export const ASK_THREAD = 'ASK';
 
 const AUTO_REPLY = {
   en: {
@@ -162,7 +161,6 @@ export class DemoBookingsSource extends BookingsSource {
         demo: true,
       });
     });
-    if (!store.threads[ASK_THREAD]) store.threads[ASK_THREAD] = [];
     storageSet(store);
   }
 
@@ -226,17 +224,20 @@ export class DemoBookingsSource extends BookingsSource {
   }
 
   summary(id, role, lang) {
-    const key = id === ASK_THREAD ? ASK_THREAD : normaliseReference(id);
+    const key = normaliseReference(id);
+    const booking = this.bookingByRef(key);
+    if (!booking) return null;
     const messages = this.threadMessages(key).map((message) => this.present(message, lang));
     const last = messages[messages.length - 1];
-    const booking = key === ASK_THREAD ? null : this.bookingByRef(key);
     return {
       id: key,
-      kind: key === ASK_THREAD ? 'general' : 'booking',
-      reference: key === ASK_THREAD ? null : (booking ? booking.reference : key),
-      surname: booking ? booking.surname : '',
-      checkIn: booking ? booking.checkIn : '',
-      checkOut: booking ? booking.checkOut : '',
+      kind: 'booking',
+      reference: booking.reference,
+      surname: booking.surname,
+      checkIn: booking.checkIn,
+      checkOut: booking.checkOut,
+      status: booking.status,
+      writable: booking.status !== 'cancelled',
       preview: last ? last.body : '',
       at: last ? last.at : '',
       unread: unreadCount(messages, role),
@@ -249,14 +250,13 @@ export class DemoBookingsSource extends BookingsSource {
     const role = query && query.role === 'owner' ? 'owner' : 'guest';
     const lang = (query && query.lang) || 'en';
     if (role === 'owner') {
-      const ids = (this.data.bookings || []).map((booking) => normaliseReference(booking.reference));
-      ids.push(ASK_THREAD);
-      return ids.map((id) => this.summary(id, 'owner', lang));
+      return (this.data.bookings || [])
+        .map((booking) => this.summary(booking.reference, 'owner', lang))
+        .filter(Boolean);
     }
-    const threads = [];
-    if (query && query.reference) threads.push(this.summary(query.reference, 'guest', lang));
-    threads.push(this.summary(ASK_THREAD, 'guest', lang));
-    return threads;
+    if (!query || !query.reference) return [];
+    const row = this.summary(query.reference, 'guest', lang);
+    return row ? [row] : [];
   }
 
   async listInbox() {
@@ -265,12 +265,15 @@ export class DemoBookingsSource extends BookingsSource {
 
   async getThread(id, lang) {
     await this.load();
-    const key = id === ASK_THREAD ? ASK_THREAD : normaliseReference(id);
-    const booking = key === ASK_THREAD ? null : this.bookingByRef(key);
+    const key = normaliseReference(id);
+    const booking = this.bookingByRef(key);
+    if (!booking) return null;
+    const guest = this.toGuestBooking(booking);
     return {
       id: key,
-      kind: key === ASK_THREAD ? 'general' : 'booking',
-      booking: booking ? this.toGuestBooking(booking) : null,
+      kind: 'booking',
+      booking: guest,
+      writable: guest.status !== 'cancelled',
       messages: this.threadMessages(key).map((message) => this.present(message, lang || 'en')),
       demo: true,
     };
@@ -278,12 +281,13 @@ export class DemoBookingsSource extends BookingsSource {
 
   async listMessages(reference, lang) {
     const thread = await this.getThread(reference, lang);
-    return thread.messages;
+    return thread ? thread.messages : [];
   }
 
   async markRead(id, role) {
     await this.load();
-    const key = id === ASK_THREAD ? ASK_THREAD : normaliseReference(id);
+    const key = normaliseReference(id);
+    if (!this.bookingByRef(key)) return null;
     const store = storageGet();
     const messages = store.threads[key] || [];
     const incoming = role === 'owner' ? 'guest' : 'property';
@@ -309,9 +313,7 @@ export class DemoBookingsSource extends BookingsSource {
   async forwardEmail(reference, kind, body, captchaToken) {
     if (!this.emailEnabled || typeof fetch !== 'function') return false;
     try {
-      const subject = reference === ASK_THREAD
-        ? 'Ask melo stay — ' + kind
-        : 'Booking ' + reference + ' — ' + kind;
+      const subject = 'Booking ' + reference + ' — ' + kind;
       const form = new FormData();
       form.append('access_key', PROPERTY.enquiry.accessKey);
       form.append('subject', subject);
@@ -334,11 +336,14 @@ export class DemoBookingsSource extends BookingsSource {
   async sendMessage(input) {
     await this.load();
     const reference = input && (input.threadId || input.reference);
-    const key = !reference || reference === ASK_THREAD ? ASK_THREAD : normaliseReference(reference);
+    const key = normaliseReference(reference);
+    const booking = this.bookingByRef(key);
     const body = String(input && input.body || '').trim();
     const kind = (input && input.kind) || 'message';
     const lang = (input && input.lang) || 'en';
     if (!body) throw new Error('empty message');
+    if (!booking) throw new Error('Chat is only available for a booking');
+    if (booking.status === 'cancelled') throw new Error('This booking is cancelled');
     const emailed = await this.forwardEmail(key, kind, body, input && input.captchaToken);
     const now = Date.now();
     const message = {
@@ -372,9 +377,10 @@ export class DemoBookingsSource extends BookingsSource {
   async reply(input) {
     await this.load();
     const reference = input && (input.threadId || input.reference);
-    const key = !reference || reference === ASK_THREAD ? ASK_THREAD : normaliseReference(reference);
+    const key = normaliseReference(reference);
     const body = String(input && input.body || '').trim();
     if (!body) throw new Error('empty message');
+    if (!this.bookingByRef(key)) throw new Error('Chat is only available for a booking');
     const message = {
       id: 'owner-' + Date.now(),
       reference: key,

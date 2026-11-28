@@ -346,7 +346,7 @@ function renderInbox() {
   page.append(el('p', { class: 'banner' }, text('guestMessagesNote')));
   if (!state.inbox.length) page.append(el('p', {}, text('inboxEmpty')));
   state.inbox.forEach((thread) => {
-    const title = thread.kind === 'general' ? 'ASK' : (thread.reference + (thread.surname ? ' · ' + thread.surname : ''));
+    const title = thread.reference + (thread.surname ? ' · ' + thread.surname : '');
     const dates = thread.checkIn ? thread.checkIn + ' – ' + thread.checkOut : '';
     page.append(el('button', {
       type: 'button',
@@ -366,7 +366,8 @@ function renderInbox() {
 
 function renderOwnerChat() {
   const thread = state.thread;
-  const title = thread.kind === 'general' ? 'ASK' : ((thread.booking && thread.booking.reference) || thread.id);
+  const title = (thread.booking && thread.booking.reference) || thread.id;
+  const cancelled = thread.booking && thread.booking.status === 'cancelled';
   const log = el('div', { class: 'chat-log' });
   thread.messages.forEach((message) => {
     const mine = message.from === 'property';
@@ -399,6 +400,7 @@ function renderOwnerChat() {
       el('strong', {}, title),
     ]),
     log,
+    cancelled ? el('p', { class: 'note' }, text('cancelledNote')) : null,
     el('div', { class: 'chips' }, templates),
     el('form', {
       class: 'composer',

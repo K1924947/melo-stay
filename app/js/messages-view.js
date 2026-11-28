@@ -1,5 +1,5 @@
 import { el } from './dom.js';
-import { ASK_THREAD, readBookingSession } from './bookings-source.js';
+import { readBookingSession } from './bookings-source.js';
 import { formatDisplayDate } from './format.js';
 
 const CHIPS = [
@@ -17,6 +17,10 @@ let notice = '';
 
 export function messagesIcon() {
   return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6.5h14v11H5z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5 7.5 12 13l7-5.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>';
+}
+
+function sameRef(a, b) {
+  return String(a || '').replace(/\s+/g, '').toUpperCase() === String(b || '').replace(/\s+/g, '').toUpperCase();
 }
 
 function dayKey(iso) {
@@ -41,6 +45,14 @@ function ticks(message) {
     el('span', { 'aria-hidden': 'true' }, read ? '✓✓' : '✓'),
     el('span', {}, read ? ctx.t('messages_read') : ctx.t('messages_sent')),
   ]);
+}
+
+function lockGlyph() {
+  const span = document.createElement('span');
+  span.className = 'lock-glyph';
+  span.setAttribute('aria-hidden', 'true');
+  span.innerHTML = '<svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 10V7.5a4 4 0 0 1 8 0V10" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>';
+  return span;
 }
 
 function mount(node) {
@@ -73,35 +85,60 @@ async function send(threadId, body, kind) {
 export async function renderMessages(next) {
   ctx = next;
   const mine = ++ticket;
-  document.body.dataset.chat = ctx.threadId ? 'open' : '';
   const session = readBookingSession();
   const demo = await ctx.source.describeBookings();
   if (mine !== ticket) return;
-  if (ctx.threadId) {
-    await ctx.source.markRead(ctx.threadId, 'guest');
-    const thread = await ctx.source.getThread(ctx.threadId, ctx.lang);
+  if (!session) {
+    document.body.dataset.chat = '';
+    if (document.body.dataset.tab !== 'messages') return;
+    mount(lockedScreen(demo.demo));
+    ctx.onUnread && ctx.onUnread();
+    return;
+  }
+  const own = sameRef(ctx.threadId, session.reference);
+  document.body.dataset.chat = own ? 'open' : '';
+  if (own) {
+    await ctx.source.markRead(session.reference, 'guest');
+    const thread = await ctx.source.getThread(session.reference, ctx.lang);
     if (mine !== ticket || document.body.dataset.tab !== 'messages') return;
-    mount(chatScreen(thread, demo.demo));
+    mount(thread ? chatScreen(thread, demo.demo) : lockedScreen(demo.demo));
+    if (!thread) document.body.dataset.chat = '';
     ctx.onUnread && ctx.onUnread();
     return;
   }
   const threads = await ctx.source.listThreads({
     role: 'guest',
-    reference: session && session.reference,
+    reference: session.reference,
     lang: ctx.lang,
   });
   if (mine !== ticket || document.body.dataset.tab !== 'messages') return;
-  mount(listScreen(threads, demo.demo, !!session));
+  mount(listScreen(threads, demo.demo));
   ctx.onUnread && ctx.onUnread();
 }
 
-function listScreen(threads, demo, loggedIn) {
+function lockedScreen(demo) {
   const page = el('div', { class: 'page' });
   page.append(el('h1', {}, ctx.t('messages_h')));
   if (demo) page.append(el('p', { class: 'banner' }, ctx.t('booking_demo')));
-  if (!loggedIn) page.append(el('p', { class: 'note' }, ctx.t('messages_login_hint')));
+  page.append(el('div', { class: 'lock-card' }, [
+    el('p', { class: 'lock-label' }, [
+      lockGlyph(),
+      el('span', {}, ctx.t('messages_locked')),
+    ]),
+    el('p', {}, ctx.t('messages_locked_body')),
+    el('button', { type: 'button', class: 'btn btn-ink', onclick: () => ctx.openBooking() }, ctx.t('messages_login')),
+    el('a', { class: 'text-btn', href: '#enquire' }, ctx.t('messages_enquire')),
+  ]));
+  return page;
+}
+
+function listScreen(threads, demo) {
+  const page = el('div', { class: 'page' });
+  page.append(el('h1', {}, ctx.t('messages_h')));
+  if (demo) page.append(el('p', { class: 'banner' }, ctx.t('booking_demo')));
+  if (!threads.length) page.append(el('p', { class: 'note' }, ctx.t('messages_empty')));
   threads.forEach((thread) => {
-    const title = thread.kind === 'general' ? ctx.t('messages_ask') : (thread.reference + (thread.surname ? ' · ' + thread.surname : ''));
+    const title = thread.reference + (thread.surname ? ' · ' + thread.surname : '');
     page.append(el('button', {
       type: 'button',
       class: 'thread-row',
@@ -114,16 +151,14 @@ function listScreen(threads, demo, loggedIn) {
       el('span', { class: 'thread-preview' }, thread.preview || ctx.t('messages_empty')),
     ]));
   });
-  if (!loggedIn) {
-    page.append(el('button', { type: 'button', class: 'btn btn-accent', onclick: () => ctx.openBooking() }, ctx.t('booking_enter')));
-  }
   return page;
 }
 
 function chatScreen(thread, demo) {
-  const title = thread.kind === 'general'
-    ? ctx.t('messages_ask')
-    : (thread.booking ? thread.booking.reference + ' · ' + thread.booking.surname : thread.id);
+  const title = thread.booking
+    ? thread.booking.reference + ' · ' + thread.booking.surname
+    : thread.id;
+  const closed = thread.writable === false;
   const log = el('div', { class: 'chat-log' });
   let lastDay = '';
   thread.messages.forEach((message) => {
@@ -169,9 +204,10 @@ function chatScreen(thread, demo) {
     ]),
     demo ? el('p', { class: 'banner chat-banner' }, ctx.t('booking_demo')) : null,
     log,
-    notice ? el('p', { class: 'note chat-note' }, notice) : null,
-    chips,
-    el('form', {
+    closed ? el('p', { class: 'note chat-note' }, ctx.t('messages_cancelled')) : null,
+    notice && !closed ? el('p', { class: 'note chat-note' }, notice) : null,
+    closed ? null : chips,
+    closed ? null : el('form', {
       class: 'composer',
       onsubmit: (event) => {
         event.preventDefault();
@@ -191,12 +227,13 @@ if (typeof window !== 'undefined') {
   });
 }
 
-export async function guestUnread(source, lang) {
+export async function guestUnread(source) {
   const session = readBookingSession();
+  if (!session) return 0;
   const threads = await source.listThreads({
     role: 'guest',
-    reference: session && session.reference,
-    lang: lang || 'en',
+    reference: session.reference,
+    lang: 'en',
   });
   return threads.reduce((sum, thread) => sum + (thread.unread || 0), 0);
 }
