@@ -47,22 +47,49 @@ export class ChannelManagerAdapter extends DataSource {
     return this.bookings.lookupBooking(query);
   }
 
-  /** TODO(channel-manager): messages stored for this confirmation code. */
+  /**
+   * TODO(channel-manager): conversation list. Guest passes their booking
+   * reference; the property passes role "owner" and sees every thread.
+   */
+  async listThreads(query) {
+    if (this.connected) return [];
+    return this.bookings.listThreads(query);
+  }
+
+  /** TODO(channel-manager): one thread, including timestamps and read state. */
+  async getThread(id, lang) {
+    if (this.connected) throw new Error('Channel manager messages are not connected.');
+    return this.bookings.getThread(id, lang);
+  }
+
   async listMessages(reference, lang) {
     if (this.connected) throw new Error('Channel manager messages are not connected.');
     return this.bookings.listMessages(reference, lang);
   }
 
   /**
-   * TODO(channel-manager): post the guest message to the reservation thread.
-   * Demo mode also emails it through Web3Forms with the booking number in the subject.
+   * TODO(channel-manager): post the guest message into the reservation thread
+   * and push it to the property in real time. Demo mode stores it in
+   * localStorage, adds an automatic test reply, and emails Web3Forms.
    */
   async sendMessage(input) {
     if (this.connected) throw new Error('Channel manager messages are not connected.');
     return this.bookings.sendMessage(input);
   }
 
-  /** TODO(channel-manager): inbox of guest messages for the owner app. */
+  /** TODO(channel-manager): property reply on a thread. */
+  async reply(input) {
+    if (this.connected) throw new Error('Channel manager messages are not connected.');
+    return this.bookings.reply(input);
+  }
+
+  /** TODO(channel-manager): mark the other side's messages read. role is guest or owner. */
+  async markRead(id, role) {
+    if (this.connected) return null;
+    return this.bookings.markRead(id, role);
+  }
+
+  /** TODO(channel-manager): inbox of threads for the owner app. */
   async listInbox() {
     if (this.connected) return [];
     return this.bookings.listInbox();

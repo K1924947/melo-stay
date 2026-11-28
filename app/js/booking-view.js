@@ -14,13 +14,7 @@ const ICONS = {
 let ctx = null;
 let session = null;
 let booking = null;
-let messages = [];
-let draft = '';
-let kind = 'message';
-let notice = '';
 let error = '';
-let busy = false;
-let captchaStarted = false;
 let refDraft = '';
 let whoDraft = '';
 let ticket = 0;
@@ -67,110 +61,15 @@ function nightsText() {
 async function refresh() {
   if (!session) {
     booking = null;
-    messages = [];
     return;
   }
   booking = await ctx.source.lookupBooking({ reference: session.reference, who: session.who });
   if (!booking) {
-    clearBookingSession(session.reference);
+    clearBookingSession();
     session = null;
-    messages = [];
     error = ctx.t('booking_missing');
     return;
   }
-  messages = await ctx.source.listMessages(booking.reference, ctx.lang);
-}
-
-function ensureCaptcha() {
-  if (captchaStarted) return;
-  captchaStarted = true;
-  const script = document.createElement('script');
-  script.src = 'https://web3forms.com/client/script.js';
-  script.async = true;
-  document.body.appendChild(script);
-}
-
-function ensureForm() {
-  let form = document.getElementById('bookingForm');
-  if (form) return form;
-  form = el('form', { id: 'bookingForm', class: 'booking-form' });
-  form.append(
-    el('label', { class: 'field' }, [
-      el('span', { 'data-i18n': 'booking_thread' }, ''),
-      el('textarea', { name: 'message', rows: '3', required: true }),
-    ]),
-    el('input', { type: 'hidden', name: 'access_key', value: PROPERTY.enquiry.accessKey }),
-    el('input', { type: 'checkbox', name: 'botcheck', tabindex: '-1', autocomplete: 'off', class: 'botcheck', 'aria-hidden': 'true' }),
-    el('div', { class: 'h-captcha', 'data-captcha': 'true' }),
-    el('p', { class: 'booking-notice', role: 'status' }),
-    el('button', { type: 'submit', class: 'btn btn-ink' }, [el('span', { 'data-i18n': 'booking_send' }, '')]),
-  );
-  form.querySelector('textarea').addEventListener('input', (event) => {
-    draft = event.target.value;
-    if (kind !== 'message' && event.target.value.trim() === '') kind = 'message';
-  });
-  form.addEventListener('submit', onSubmit);
-  document.getElementById('formPark').append(form);
-  return form;
-}
-
-async function onSubmit(event) {
-  event.preventDefault();
-  if (!booking || busy) return;
-  const form = event.currentTarget;
-  const body = draft.trim();
-  if (!body) return;
-  busy = true;
-  notice = '';
-  error = '';
-  const tokenField = form.querySelector('[name="h-captcha-response"]');
-  try {
-    await ctx.source.sendMessage({
-      reference: booking.reference,
-      body,
-      kind,
-      captchaToken: tokenField ? tokenField.value : '',
-    });
-    draft = '';
-    kind = 'message';
-    notice = ctx.t('booking_sent');
-    messages = await ctx.source.listMessages(booking.reference, ctx.lang);
-  } catch (err) {
-    error = ctx.t('booking_fail');
-  } finally {
-    busy = false;
-    renderBooking(ctx);
-  }
-}
-
-function paintForm() {
-  const form = ensureForm();
-  form.querySelectorAll('[data-i18n]').forEach((node) => {
-    node.textContent = ctx.t(node.getAttribute('data-i18n'));
-  });
-  const area = form.querySelector('textarea');
-  area.placeholder = ctx.t('booking_placeholder');
-  if (document.activeElement !== area && area.value !== draft) area.value = draft;
-  const status = form.querySelector('.booking-notice');
-  status.replaceChildren();
-  if (notice) status.append(el('span', { class: 'status-line' }, [
-    el('span', { class: 'mark mark-open', 'aria-hidden': 'true' }),
-    el('span', {}, notice),
-  ]));
-  if (error) status.append(el('span', { class: 'status-line' }, [
-    el('span', { class: 'mark mark-ask', 'aria-hidden': 'true' }),
-    el('span', {}, error),
-  ]));
-  form.querySelector('button[type="submit"]').disabled = busy;
-  return form;
-}
-
-function quick(nextKind, key) {
-  kind = nextKind;
-  draft = ctx.t(key);
-  notice = '';
-  error = '';
-  renderBooking(ctx);
 }
 
 export async function renderBooking(next) {
@@ -207,7 +106,6 @@ export async function renderBooking(next) {
         writeBookingSession(found.reference, who.value);
         session = readBookingSession();
         booking = found;
-        messages = await ctx.source.listMessages(found.reference, ctx.lang);
         renderBooking(ctx);
       },
     }, [
@@ -250,43 +148,23 @@ export async function renderBooking(next) {
     el('p', {}, ctx.t('booking_door_p')),
     el('h2', {}, ctx.t('booking_house_h')),
     el('p', {}, ctx.t('booking_house_p')),
+    el('button', {
+      type: 'button',
+      class: 'btn btn-ink',
+      onclick: () => ctx.openMessages(booking.reference),
+    }, ctx.t('messages_open')),
   ]));
-
-  const thread = el('section', { class: 'card' }, [el('h2', {}, ctx.t('booking_thread'))]);
-  if (!messages.length) thread.append(el('p', { class: 'note' }, ctx.t('booking_empty')));
-  messages.forEach((message) => {
-    const mine = message.from === 'guest';
-    thread.append(el('article', { class: mine ? 'bubble is-guest' : 'bubble is-property' }, [
-      el('p', { class: 'status-line' }, [
-        el('span', { class: mine ? 'mark mark-ask' : 'mark mark-open', 'aria-hidden': 'true' }),
-        el('span', {}, mine ? ctx.t('booking_from_you') : ctx.t('booking_from_us')),
-      ]),
-      el('p', {}, message.body),
-    ]));
-  });
-  const actions = el('div', { class: 'quick-actions' }, [
-    el('button', { type: 'button', class: 'btn btn-ghost', onclick: () => quick('early-checkin', 'booking_early_body') }, ctx.t('booking_early')),
-    el('button', { type: 'button', class: 'btn btn-ghost', onclick: () => quick('late-checkout', 'booking_late_body') }, ctx.t('booking_late')),
-    el('button', { type: 'button', class: 'btn btn-ghost', onclick: () => quick('change', 'booking_change_body') }, ctx.t('booking_change')),
-  ]);
-  thread.append(actions, paintForm());
-  page.append(thread);
   page.append(el('button', {
     type: 'button',
     class: 'text-btn',
     onclick: () => {
       const reference = booking && booking.reference;
-      clearBookingSession(reference);
+      clearBookingSession();
       session = null;
       booking = null;
-      messages = [];
-      draft = '';
-      kind = 'message';
-      notice = '';
       error = '';
       renderBooking(ctx);
     },
   }, ctx.t('booking_logout')));
-  ensureCaptcha();
   return mount(page);
 }

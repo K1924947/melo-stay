@@ -20,6 +20,9 @@ const state = {
   rooms: [],
   connection: null,
   inbox: [],
+  threadId: '',
+  thread: null,
+  replyDraft: '',
 };
 
 function text(key, vars) {
@@ -317,24 +320,105 @@ function renderStats() {
 
 function renderLater() {
   const items = ['bookings', 'occupancy', 'revenue', 'enquiries'];
-  const inbox = state.inbox || [];
-  const messages = el('section', { class: 'placeholder' }, [
-    el('h2', {}, text('guestMessages')),
-    el('p', {}, text('guestMessagesNote')),
-    el('span', { class: 'tag' }, text('coming')),
-  ]);
-  inbox.forEach((message) => {
-    messages.append(el('p', { class: 'note' }, message.reference + ' · ' + message.body));
-  });
   return el('div', {}, [
     el('h1', {}, text('laterTitle')),
     el('p', { class: 'lede' }, text('laterBody')),
-    messages,
     ...items.map((key) => el('section', { class: 'placeholder' }, [
       el('h2', {}, text(key)),
       el('span', { class: 'tag' }, text('coming')),
     ])),
   ]);
+}
+
+async function openInbox(id) {
+  if (id) await source.markRead(id, 'owner');
+  state.thread = id ? await source.getThread(id, state.lang === 'ko' ? 'ko' : 'en') : null;
+  state.threadId = id || '';
+  state.inbox = await source.listInbox();
+  state.view = 'inbox';
+  render();
+}
+
+function renderInbox() {
+  if (state.threadId && state.thread) return renderOwnerChat();
+  const page = el('div', {});
+  page.append(el('h1', {}, text('inbox')));
+  page.append(el('p', { class: 'banner' }, text('guestMessagesNote')));
+  if (!state.inbox.length) page.append(el('p', {}, text('inboxEmpty')));
+  state.inbox.forEach((thread) => {
+    const title = thread.kind === 'general' ? 'ASK' : (thread.reference + (thread.surname ? ' · ' + thread.surname : ''));
+    const dates = thread.checkIn ? thread.checkIn + ' – ' + thread.checkOut : '';
+    page.append(el('button', {
+      type: 'button',
+      class: 'thread-row',
+      onclick: () => openInbox(thread.id),
+    }, [
+      el('span', { class: 'thread-title' }, [
+        title,
+        thread.unread ? el('span', { class: 'badge' }, String(thread.unread)) : null,
+      ]),
+      dates ? el('span', { class: 'thread-preview' }, dates) : null,
+      el('span', { class: 'thread-preview' }, thread.preview || text('inboxEmpty')),
+    ]));
+  });
+  return page;
+}
+
+function renderOwnerChat() {
+  const thread = state.thread;
+  const title = thread.kind === 'general' ? 'ASK' : ((thread.booking && thread.booking.reference) || thread.id);
+  const log = el('div', { class: 'chat-log' });
+  thread.messages.forEach((message) => {
+    const mine = message.from === 'property';
+    log.append(el('article', { class: mine ? 'bubble is-guest' : 'bubble is-property' }, [
+      el('p', { class: 'bubble-meta' }, [
+        el('span', { class: mine ? 'mark mark-open' : 'mark mark-ask', 'aria-hidden': 'true' }),
+        el('span', {}, mine ? 'melo stay' : (thread.booking ? thread.booking.surname : 'Guest')),
+        el('span', {}, mine ? (message.status === 'read' ? '✓✓ ' + text('read') : '✓ ' + text('sent')) : ''),
+      ]),
+      el('p', {}, message.body),
+    ]));
+  });
+  const area = el('textarea', { rows: '3' });
+  area.value = state.replyDraft;
+  area.placeholder = text('replyPlaceholder');
+  area.addEventListener('input', () => { state.replyDraft = area.value; });
+  const templates = ['tmpl_thanks', 'tmpl_early', 'tmpl_late', 'tmpl_luggage', 'tmpl_directions'].map((key) => (
+    el('button', {
+      type: 'button',
+      class: 'chip',
+      onclick: () => {
+        state.replyDraft = text(key);
+        render();
+      },
+    }, text(key).slice(0, 18))
+  ));
+  const screen = el('section', { class: 'chat-screen' }, [
+    el('header', { class: 'chat-bar' }, [
+      el('button', { type: 'button', class: 'text-btn', onclick: () => openInbox('') }, text('back')),
+      el('strong', {}, title),
+    ]),
+    log,
+    el('div', { class: 'chips' }, templates),
+    el('form', {
+      class: 'composer',
+      onsubmit: async (event) => {
+        event.preventDefault();
+        const body = state.replyDraft.trim();
+        if (!body) return;
+        await source.reply({ threadId: state.threadId, body, lang: state.lang });
+        state.replyDraft = '';
+        state.thread = await source.getThread(state.threadId, state.lang === 'ko' ? 'ko' : 'en');
+        state.inbox = await source.listInbox();
+        render();
+      },
+    }, [
+      area,
+      el('button', { type: 'submit', class: 'btn' }, text('replySend')),
+    ]),
+  ]);
+  requestAnimationFrame(() => { log.scrollTop = log.scrollHeight; });
+  return screen;
 }
 
 function render() {
@@ -368,12 +452,17 @@ function render() {
   }
   tabs.hidden = false;
   tabs.replaceChildren();
-  [['calendar', 'calendar'], ['stats', 'stats'], ['later', 'later']].forEach(([id, key]) => {
+  const unread = (state.inbox || []).reduce((sum, thread) => sum + (thread.unread || 0), 0);
+  [['calendar', 'calendar'], ['stats', 'stats'], ['inbox', 'inbox'], ['later', 'later']].forEach(([id, key]) => {
     tabs.append(el('button', {
       type: 'button',
       'aria-current': state.view === id ? 'page' : null,
-      onclick: () => { state.view = id; render(); },
-    }, text(key)));
+      onclick: () => {
+        state.view = id;
+        if (id !== 'inbox') state.threadId = '';
+        render();
+      },
+    }, id === 'inbox' && unread ? text(key) + ' ' + unread : text(key)));
   });
   const head = el('div', {}, [
     el('p', { class: 'banner' }, text('readOnly') + ' · ' + text('windowNote')),
@@ -383,10 +472,14 @@ function render() {
   if (state.error) body = el('p', {}, text('failed'));
   else if (!state.ready) body = el('p', { class: 'loading' }, text('loading'));
   else if (state.view === 'stats') body = renderStats();
+  else if (state.view === 'inbox') body = renderInbox();
   else if (state.view === 'later') body = renderLater();
   else body = renderCalendar();
-  main.replaceChildren(head, body);
-  if (state.authed) {
+  const chatting = state.view === 'inbox' && state.threadId;
+  tabs.hidden = !state.authed || !!chatting;
+  if (chatting) main.replaceChildren(body);
+  else main.replaceChildren(head, body);
+  if (state.authed && !chatting) {
     main.append(el('button', {
       type: 'button',
       class: 'btn ghost',
@@ -422,6 +515,13 @@ async function boot() {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/owner/sw.js', { scope: '/owner/', updateViaCache: 'none' }).catch(() => {});
   }
+}
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('storage', (event) => {
+    if (event.key !== 'melo_demo_mail_v1' || !state.authed || state.view !== 'inbox') return;
+    openInbox(state.threadId);
+  });
 }
 
 boot();

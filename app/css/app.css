@@ -338,6 +338,48 @@ main {
 .booking-ref { margin: 0; font-weight: 600; letter-spacing: 0.08em; }
 .booking-card h2 { margin-top: 12px; }
 .booking-notice { min-height: 0; }
+.phone { position: relative; }
+body[data-chat="open"] .tabbar { display: none; }
+.chat-screen {
+  position: absolute; inset: 0; z-index: 6;
+  display: flex; flex-direction: column;
+  background: var(--bg);
+}
+.chat-bar {
+  display: flex; align-items: center; gap: 12px;
+  padding: max(10px, env(safe-area-inset-top)) 16px 10px;
+  border-bottom: 1px solid var(--line);
+}
+.chat-bar strong { font-size: 15px; }
+.chat-banner, .chat-note { margin: 8px 16px; }
+.chat-log { flex: 1; overflow: auto; padding: 8px 16px 12px; }
+.day-sep { text-align: center; color: var(--ink-soft); font-size: 12px; margin: 12px 0; }
+.bubble { max-width: 85%; margin: 8px 0; padding: 8px 12px; border-radius: 16px; }
+.bubble.is-property { margin-right: auto; background: var(--paper); border: 1px solid var(--line); }
+.bubble.is-guest { margin-left: auto; background: var(--bg-warm); border: 1px dashed var(--ink); }
+.bubble-meta { display: flex; align-items: center; gap: 6px; margin: 0 0 4px; font-size: 12px; color: var(--ink-soft); }
+.bubble-body { margin: 0; white-space: pre-wrap; }
+.bubble-time { margin-left: auto; }
+.tick { display: flex; justify-content: flex-end; gap: 4px; margin-top: 4px; font-size: 11px; color: var(--ink); }
+.chips { display: flex; gap: 8px; overflow-x: auto; padding: 0 16px 8px; }
+.chip {
+  flex: 0 0 auto; border: 1px solid var(--ink); background: var(--paper);
+  border-radius: 999px; min-height: 36px; padding: 6px 12px; font-size: 13px;
+}
+.composer { display: flex; gap: 8px; align-items: flex-end; padding: 8px 16px max(12px, env(safe-area-inset-bottom)); border-top: 1px solid var(--line); }
+.composer textarea { flex: 1; min-height: 48px; max-height: 120px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); font-size: 16px; }
+.composer .btn { width: auto; margin: 0; padding: 12px 16px; }
+.thread-row {
+  width: 100%; text-align: left; background: var(--paper); border: 1px solid var(--line);
+  border-radius: 16px; padding: 12px 14px; margin: 0 0 10px;
+}
+.thread-title { display: flex; justify-content: space-between; gap: 8px; font-weight: 600; }
+.thread-preview { display: block; margin-top: 4px; color: var(--ink-soft); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.badge {
+  display: inline-flex; min-width: 18px; height: 18px; align-items: center; justify-content: center;
+  margin-left: 4px; padding: 0 4px; border-radius: 999px; background: var(--ink); color: var(--bg); font-size: 10px;
+}
+.tab .badge { position: absolute; top: 2px; right: 8px; }
 .btn:disabled { opacity: 0.45; }
 .text-btn {
   background: none;
@@ -480,7 +522,7 @@ main {
 .tabbar {
   flex: 0 0 auto;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 0;
   padding: 6px 6px max(8px, env(safe-area-inset-bottom));
   background: rgba(255, 252, 250, 0.96);

@@ -1,7 +1,7 @@
 // Guest app shell only. Scope is /app/, so the live homepage is untouched.
 // prices.json sits at the site root; StaticDataSource fetches it network-first.
 
-const CACHE = 'melo-guest-v3';
+const CACHE = 'melo-guest-v4';
 
 const SHELL = [
   '/app/',
@@ -21,6 +21,7 @@ const SHELL = [
   '/app/js/stats.js',
   '/app/js/bookings-source.js',
   '/app/js/booking-view.js',
+  '/app/js/messages-view.js',
   '/app/data/demo-bookings.json',
   '/app/icons/icon-192.png',
   '/app/icons/icon-512.png',

@@ -18,8 +18,8 @@ A service worker cannot see URLs outside its own folder on GitHub Pages. `prices
 - Guests look at rooms, prices, an enquiry form, and practical info. Enquiry mail goes through the same Web3Forms form as the website (`melostayseoul@gmail.com`, `+82-10-4093-8977`).
 - Prices use the same rules as `index.html`. With `discount_pct` at 0, the guest sees the Booking.com amount and no strikethrough. A `null` room is unavailable. Dates outside the file are not treated as sold; the guest is asked to enquire.
 - The owner app only reads. It shows a month calendar (price and availability per night, then each room type on tap) and a stats page (sold-out nights, average / min / max, price by room type, weekday vs weekend, cheapest and dearest dates, room types open per night). It does not edit rooms, download JSON, or commit to GitHub.
-- The guest app has a My booking tab. Until a channel manager is connected it uses fake rows in `app/data/demo-bookings.json` (for example booking `TEST1234`, surname `Kim`). A banner says it is test mode. The login is kept in `sessionStorage` only. A message is stored in that same browser and also emailed through the existing Web3Forms form, with the booking number in the subject.
-- Placeholders for bookings, occupancy, revenue, and enquiries stay on the owner Later tab. That tab also lists guest messages from the bookings source. In demo mode those are the sample lines from the test file, not a live inbox.
+- The guest app has a Stay tab and a Chat tab. Until a channel manager is connected, stays are the fake rows in `app/data/demo-bookings.json` (booking `TEST1234`, surname `Kim`). The chat has one thread per booking plus a general “Ask melo stay” thread. A banner says it is test mode. Login stays in `sessionStorage`. Messages for the test are in `localStorage` (`melo_demo_mail_v1`) so the guest app and the owner Inbox on the same browser can see each other. A guest message is also emailed through Web3Forms, with the booking number in the subject. Demo mode adds an automatic property reply. This is not live chat: two phones, or a cleared browser, will not share the thread.
+- The owner Inbox is a tab of its own. Later still only holds placeholders for bookings, occupancy, revenue, and enquiries.
 - There is no channel manager yet. The adapter forwards reads to `StaticDataSource` and leaves the write paths unimplemented.
 
 ## What the light gate does not do
@@ -100,9 +100,13 @@ The owner stats treat Friday and Saturday nights as the weekend. A night is sold
 | `getRates()` | Replace the `prices.json` read with nightly rate and availability. An iCal feed can usually fill `available` only, not `amount`. The owner calendar and stats read this method’s data, via `summarise()`. |
 | `pushRates(rates)` | Not used by the owner app. v1 does not edit rates. A later backend can push them if the vendor allows it. |
 | `lookupBooking({ reference, who })` | Find one reservation. `who` is the surname or the email on the booking, compared without case. Return a GuestBooking or `null`. Do not return other guests' stays. |
-| `listMessages(reference, lang)` | The thread for that confirmation code. |
-| `sendMessage({ reference, body, kind, captchaToken })` | Store the guest's message on the reservation. `kind` is `message`, `early-checkin`, `late-checkout`, or `change`. Demo mode also posts it to Web3Forms with subject `Booking REFERENCE — kind`. |
-| `listInbox()` | Messages the property should see. The owner Later tab calls this. Demo mode returns only the sample file. |
+| `listThreads({ role, reference, lang })` | Conversation list. `role: "guest"` returns that booking, if `reference` is set, plus the general `ASK` thread. `role: "owner"` returns every demo booking and `ASK`. Each row has `unread`, preview, dates, and surname. |
+| `getThread(id, lang)` | One thread. `id` is a booking reference or `ASK`. Messages include `at`, `from` (`guest` or `property`), and `status` (`sent` or `read`). |
+| `sendMessage({ threadId, body, kind, lang, captchaToken })` | Guest message. `kind` is `message`, `early-checkin`, `late-checkout`, `directions`, `luggage`, or `change`. Demo mode stores it, emails Web3Forms (`Booking REFERENCE — kind`, or `Ask melo stay — kind`), then appends an automatic test reply. |
+| `reply({ threadId, body })` | Property reply. No email. |
+| `markRead(id, role)` | `role` is `guest` or `owner`. Marks the other side's messages `read`. The tick is the status word plus a check mark, not a colour. |
+| `listInbox()` | Owner conversation list. Same rows as `listThreads({ role: "owner" })`. |
+| `listMessages(reference, lang)` | The messages inside one thread. Kept so older calls still work. |
 | `listBookings()` | Poll reservations, or accept a webhook and store `Booking` records. The Later tab is waiting on this for occupancy and revenue. Map cancellations to `cancelled`. |
 | `recordEnquiry()` | Optional. After the guest email succeeds, create a lead in the channel manager. Mail must still work if this call fails. The owner occupancy, revenue, and enquiry figures would come from here and from `listBookings()`. |
 
@@ -142,6 +146,8 @@ Ed does not yet know which product his brother uses. These are the things that p
 6. 손님 앱으로 온 문의를 채널 매니저에도 넣어야 하나요, 아니면 이메일이면 충분한가요?
 7. 요금은 채널 매니저에서만 바꾸나요? 운영 앱에서는 바꾸지 않습니다.
 8. 웹사이트 요금 파일은 지금 Booking.com 기준으로 하루 두 번 덮어씁니다. 채널 매니저를 연결하면 그 작업을 멈출까요?
+
+Real-time chat cannot live in these files. `localStorage` only shares the guest app and the owner app in one browser, and it is wiped if that browser clears site data. A live thread needs a backend both sides can reach: the channel manager’s messaging API, or a small store such as Supabase (or the Worker described below) with a row per message and a way to subscribe to new ones. GitHub Pages cannot hold that, and Web3Forms only sends email; it does not update the other screen.
 
 ## Why this cannot be the backend
 

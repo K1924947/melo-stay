@@ -4,6 +4,7 @@ import { GROUPS, PROPERTY, ROOM_LIST, roomPhotos } from './catalog.js';
 import { StaticDataSource } from './static-source.js';
 import { createGuestSource } from './channel-manager.js';
 import { bookingIcon, renderBooking, restoreBookingSession } from './booking-view.js';
+import { guestUnread, messagesIcon, renderMessages } from './messages-view.js';
 import {
   defaultCheckinISO,
   quoteRoom,
@@ -24,6 +25,7 @@ const ICONS = {
   enquire: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6.5h14v11H5z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5 7.5 12 13l7-5.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>',
   info: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 11v5M12 8h.01" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
   booking: bookingIcon(),
+  messages: messagesIcon(),
 };
 
 const ARIA_PHOTO = {
@@ -101,11 +103,15 @@ function parseRoute() {
     history.replaceState(null, '', '#rooms');
     raw = 'rooms';
   }
+  if (raw === 'messages' || raw.startsWith('messages/')) {
+    const threadId = decodeURIComponent(raw.slice('messages/'.length));
+    return { tab: 'messages', roomId: null, threadId: raw.startsWith('messages/') && threadId ? threadId : null };
+  }
   if (raw.startsWith('room/')) {
     const roomId = decodeURIComponent(raw.slice(5));
     return { tab: 'rooms', roomId: state.rooms.some((room) => room.id === roomId) ? roomId : null };
   }
-  const tabs = ['rooms', 'prices', 'enquire', 'booking', 'info'];
+  const tabs = ['rooms', 'prices', 'enquire', 'booking', 'messages', 'info'];
   return { tab: tabs.indexOf(raw) === -1 ? 'rooms' : raw, roomId: null };
 }
 
@@ -284,16 +290,20 @@ function renderTabs(route) {
     ['prices', 'tab_prices', 'prices'],
     ['enquire', 'nav_enquire', 'enquire'],
     ['booking', 'tab_booking', 'booking'],
+    ['messages', 'tab_messages', 'messages'],
     ['info', 'tab_info', 'info'],
   ];
   nav.replaceChildren();
   tabs.forEach(([id, key, icon]) => {
+    const label = el('span', { class: 'tab-label' }, t(key));
+    if (id === 'messages') label.append(el('span', { class: 'badge', hidden: true }));
     nav.append(el('button', {
       type: 'button',
       class: route.tab === id ? 'tab active' : 'tab',
+      'data-tab': id,
       'aria-current': route.tab === id ? 'page' : null,
       onclick: () => navigate(id),
-    }, [svgIcon(ICONS[icon]), el('span', {}, t(key))]));
+    }, [svgIcon(ICONS[icon]), label]));
   });
 }
 
@@ -793,15 +803,43 @@ function render() {
     ensureCaptcha();
   } else if (route.tab === 'booking') {
     main.append(el('p', { class: 'loading' }, t('loading')));
-    renderBooking({ lang: state.lang, t, source });
+    renderBooking({
+      lang: state.lang,
+      t,
+      source,
+      openMessages: (reference) => navigate('messages/' + reference),
+    });
+  } else if (route.tab === 'messages') {
+    main.append(el('p', { class: 'loading' }, t('loading')));
+    renderMessages({
+      lang: state.lang,
+      t,
+      source,
+      threadId: route.threadId,
+      openThread: (id) => navigate(id ? 'messages/' + id : 'messages'),
+      openBooking: () => navigate('booking'),
+      onUnread: paintUnread,
+    });
   } else if (route.tab === 'info') {
     main.append(renderInfo());
   } else {
     main.append(renderRooms());
   }
+  if (route.tab !== 'messages') document.body.dataset.chat = '';
   if (main.dataset.view === viewKey) main.scrollTop = scroll;
   else main.scrollTop = 0;
   main.dataset.view = viewKey;
+  paintUnread();
+}
+
+async function paintUnread() {
+  try {
+    const count = await guestUnread(source, state.lang);
+    const badge = document.querySelector('.tab[data-tab="messages"] .badge');
+    if (!badge) return;
+    badge.hidden = !count;
+    badge.textContent = count ? String(count) : '';
+  } catch (err) { /* badge is optional */ }
 }
 
 function registerServiceWorker() {
